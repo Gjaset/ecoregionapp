@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
+import './styles/formularioFUN.css';
 
 interface FormularioFUNData {
   // Section 1: Datos del interesado

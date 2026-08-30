@@ -1,0 +1,593 @@
+/* ========================================
+   FORMULARIO FUN - ESTILOS
+   ======================================== */
+
+/* Variables específicas del formulario */
+:root {
+  --form-gap: 24px;
+  --form-field-gap: 8px;
+  --form-section-padding: 24px;
+  --form-card-radius: 12px;
+  --form-input-height: 44px;
+  --form-input-radius: 6px;
+  --form-font-size: 14px;
+  --form-label-size: 12px;
+}
+
+/* ========================================
+   CONTENEDOR PRINCIPAL
+   ======================================== */
+.formulario-fun {
+  display: grid;
+  gap: var(--form-gap);
+  width: 100%;
+}
+
+/* Header del formulario */
+.form-header {
+  text-align: center;
+  padding: 24px 0 8px;
+}
+.form-header h1 {
+  margin: 0 0 8px;
+  color: var(--forest-deep);
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.form-header p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+/* ========================================
+   SECCIONES
+   ======================================== */
+.form-section {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--form-card-radius);
+  padding: var(--form-section-padding);
+}
+[data-theme="dark"] .form-section {
+  background: var(--paper);
+  border-color: var(--line);
+}
+
+.section-heading {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+[data-theme="dark"] .section-heading {
+  border-color: var(--line);
+}
+.section-heading h2 {
+  margin: 0;
+  color: var(--forest-deep);
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+/* ========================================
+   GRID DE CAMPOS
+   ======================================== */
+.section-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--form-gap);
+  max-width: 720px;
+  margin: 0 auto;
+}
+@media (min-width: 760px) {
+  .section-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.field-wide {
+  grid-column: 1 / -1;
+}
+
+/* ========================================
+   CAMPOS INDIVIDUALES
+   ======================================== */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--form-field-gap);
+}
+.field label {
+  color: var(--ink-soft);
+  font-size: var(--form-label-size);
+  font-weight: 600;
+}
+.field label b {
+  color: var(--coral);
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  height: var(--form-input-height);
+  border: 1px solid var(--line);
+  border-radius: var(--form-input-radius);
+  outline: none;
+  background: rgba(255, 255, 255, 0.65);
+  color: var(--ink);
+  padding: 0 13px;
+  font-size: var(--form-font-size);
+  font-family: inherit;
+  transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #a7b4ae;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--forest);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(31, 91, 78, 0.1);
+}
+[data-theme="dark"] .field input,
+[data-theme="dark"] .field select,
+[data-theme="dark"] .field textarea {
+  background: rgba(30, 50, 40, 0.8);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .field input::placeholder,
+[data-theme="dark"] .field textarea::placeholder {
+  color: #6a8a75;
+}
+[data-theme="dark"] .field input:focus,
+[data-theme="dark"] .field select:focus,
+[data-theme="dark"] .field textarea:focus {
+  background: var(--paper);
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(79, 168, 92, 0.2);
+}
+.field textarea {
+  min-height: 88px;
+  padding-top: 12px;
+  resize: vertical;
+}
+
+/* Error de campo */
+.field-error {
+  margin: 6px 0 0;
+  color: var(--coral);
+  font-size: 12px;
+  font-weight: 500;
+}
+[data-theme="dark"] .field-error {
+  color: #f09885;
+}
+
+/* ========================================
+   RADIO BUTTONS
+   ======================================== */
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ink);
+}
+.radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--forest);
+  cursor: pointer;
+}
+
+/* ========================================
+   GRIDS ESPECÍFICOS
+   ======================================== */
+
+/* Apoderado */
+.apoderado-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .apoderado-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .apoderado-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Calidad predio */
+.calidad-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+@media (max-width: 1000px) {
+  .calidad-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .calidad-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 500px) {
+  .calidad-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.calidad-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.calidad-label:hover {
+  border-color: #a5c3b4;
+  background: var(--mint);
+}
+[data-theme="dark"] .calidad-label {
+  border-color: var(--line);
+  background: rgba(30, 50, 40, 0.4);
+  color: var(--ink);
+}
+[data-theme="dark"] .calidad-label:hover {
+  background: var(--mint);
+  border-color: var(--forest-light);
+}
+.calidad-label input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--forest);
+}
+
+/* Tipo predio */
+.tipo-predio-group {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.tipo-predio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.tipo-predio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--forest);
+}
+
+/* ========================================
+   TABLAS
+   ======================================== */
+.coords-table,
+.species-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+.coords-table th,
+.coords-table td,
+.species-table th,
+.species-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.coords-table th,
+.species-table th {
+  background: var(--mint);
+  color: var(--forest-deep);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.coords-table input,
+.species-table input {
+  width: 100%;
+  min-width: 120px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--ink);
+}
+.coords-table input:focus,
+.species-table input:focus {
+  border-color: var(--forest);
+  background: white;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(31, 91, 78, 0.1);
+}
+[data-theme="dark"] .coords-table th,
+[data-theme="dark"] .species-table th {
+  background: var(--mint);
+  color: var(--forest-deep);
+}
+[data-theme="dark"] .coords-table td,
+[data-theme="dark"] .species-table td {
+  border-color: var(--line);
+}
+[data-theme="dark"] .coords-table input,
+[data-theme="dark"] .species-table input {
+  background: rgba(30, 50, 40, 0.8);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .coords-table input:focus,
+[data-theme="dark"] .species-table input:focus {
+  background: var(--paper);
+  border-color: var(--forest);
+  box-shadow: 0 0 0 2px rgba(79, 168, 92, 0.2);
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--coral);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.btn-link:hover {
+  text-decoration: underline;
+}
+[data-theme="dark"] .btn-link {
+  color: var(--coral);
+}
+[data-theme="dark"] .btn-link:hover {
+  color: #ffb3a0;
+}
+
+.btn-primary {
+  padding: 14px 28px;
+  background: var(--forest);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 7px 18px rgba(31, 91, 78, 0.16);
+}
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(31, 91, 78, 0.18);
+}
+[data-theme="dark"] .btn-primary {
+  background: var(--forest);
+  box-shadow: 0 7px 18px rgba(79, 168, 92, 0.3);
+}
+[data-theme="dark"] .btn-primary:hover:not(:disabled) {
+  box-shadow: 0 10px 22px rgba(79, 168, 92, 0.4);
+}
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-primary.danger {
+  background: #e74c3c;
+  box-shadow: 0 7px 18px rgba(231, 76, 60, 0.3);
+}
+.btn-primary.danger:hover:not(:disabled) {
+  background: #c0392b;
+  box-shadow: 0 10px 22px rgba(231, 76, 60, 0.4);
+}
+
+.btn-secondary {
+  padding: 12px 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+  background: var(--mint);
+  border-color: var(--forest);
+  color: var(--forest);
+}
+[data-theme="dark"] .btn-secondary {
+  background: var(--paper);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+/* ========================================
+   ALERTAS
+   ======================================== */
+.alert {
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+.alert-success {
+  background: #eef7f0;
+  border: 1px solid #c9ded2;
+  color: var(--forest-deep);
+}
+.alert-error {
+  background: #fff7f2;
+  border: 1px solid #efd3c8;
+  color: #a7523c;
+}
+[data-theme="dark"] .alert-success {
+  background: #1a3d38;
+  border-color: #2d4a3a;
+  color: #81e09a;
+}
+[data-theme="dark"] .alert-error {
+  background: #3a1a1a;
+  border-color: #5a2d2d;
+  color: #f09885;
+}
+
+/* ========================================
+   ESPECIES - CARD LAYOUT
+   ======================================== */
+.species-section {
+  margin-top: 16px;
+}
+.species-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.species-header h3 {
+  margin: 0;
+  color: var(--forest-deep);
+  font-size: 16px;
+  font-weight: 600;
+}
+.species-list {
+  display: grid;
+  gap: 24px;
+}
+.species-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  padding: 24px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.species-card:hover {
+  box-shadow: 0 4px 16px rgba(23, 59, 53, 0.08);
+  border-color: #a5c3b4;
+}
+[data-theme="dark"] .species-card {
+  background: var(--paper);
+  border-color: var(--line);
+}
+[data-theme="dark"] .species-card:hover {
+  border-color: var(--forest-light);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+.species-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+[data-theme="dark"] .species-card-header {
+  border-color: var(--line);
+}
+.species-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--mint);
+  color: var(--forest);
+  font-weight: 700;
+  font-size: 13px;
+  font-family: 'Fraunces', Georgia, serif;
+}
+.species-title {
+  margin: 0;
+  color: var(--forest-deep);
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+}
+.btn-remove {
+  padding: 0;
+  font-size: 12px;
+}
+.species-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+@media (max-width: 600px) {
+  .species-fields {
+    grid-template-columns: 1fr;
+  }
+}
+.species-card .field label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* ========================================
+   FORM ACTIONS
+   ======================================== */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 24px;
+}
+.form-actions .btn-primary {
+  flex: 1;
+  min-width: 200px;
+  max-width: 280px;
+  padding: 16px 24px;
+  font-size: 14px;
+}
+@media (max-width: 760px) {
+  .form-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  .form-actions .btn-primary {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* ========================================
+   PLACEHOLDER FORMS
+   ======================================== */
+.formulario-car,
+.formulario-sda,
+.formulario-cor {
+  padding: 48px 0;
+}
+.form-placeholder {
+  text-align: center;
+  padding: 60px 24px;
+  color: var(--ink-soft);
+}
+.form-placeholder p {
+  margin: 0;
+  font-size: 16px;
+}
