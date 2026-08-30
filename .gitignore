@@ -20,6 +20,7 @@ frontend/dist/
 .DS_Store
 
 contexto
+formatos
 
 backend/.env
 backend/alembic

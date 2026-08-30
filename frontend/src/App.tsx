@@ -4,9 +4,10 @@ import { Footer } from './components/comunes/Footer';
 import { AIAssistant } from './components/comunes/AIAssistant';
 import { Navbar } from './components/comunes/Navbar';
 import { AuthoritySelector, type AuthorityCode } from './components/formulario/AuthoritySelector';
-import { FormularioCAR } from './components/formulario/FormularioCAR';
-import { FormularioCorpoboyaca } from './components/formulario/FormularioCorpoboyaca';
-import { FormularioSDA } from './components/formulario/FormularioSDA';
+import FormularioCAR from './components/formulario/FormularioCAR';
+import FormularioCOR from './components/formulario/FormularioCOR';
+import FormularioSDA from './components/formulario/FormularioSDA';
+import FormularioFUN from './components/formulario/formularioFUN';
 import { NormalizationPanel } from './components/formulario/NormalizationPanel';
 import { StepProgress } from './components/formulario/StepProgress';
 import { api } from './services/api';
@@ -100,11 +101,17 @@ function App() {
           <AuthoritySelector value={authority} onChange={(nextAuthority) => { setAuthority(nextAuthority); setAuthorityDetails({}); setNormalizedData(null); }} />
           {authority === 'SDA' && <FormularioSDA formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}
           {authority === 'CAR' && <FormularioCAR formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}
-          {authority === 'CORPOBOYACA' && <FormularioCorpoboyaca formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}
+          {authority === 'CORPOBOYACA' && <FormularioCOR formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}
           <div className="form-actions"><div><span className="action-hint">Paso final</span><p>Analizaremos tus datos antes de generar el documento.</p></div><button className="primary-button" onClick={() => normalize()} disabled={loading}>{loading ? <><Loader2 className="spin" size={18} /> Analizando...</> : <><Sparkles size={18} /> Analizar y continuar</>}</button></div>
         </section>
         {normalizedData && <section className="shell result-wrap"><NormalizationPanel data={normalizedData} loading={loading} onConfirm={() => normalize(true)} />{normalizedData.listo_para_generar && <button className="download-button" onClick={downloadDocument} disabled={loading}>{loading ? <Loader2 className="spin" size={18} /> : <Download size={18} />} {loading ? 'Generando documento...' : 'Descargar documento Word'}</button>}</section>}
         {error && <div className="shell error-message" role="alert">{error}</div>}
+        <section className="shell" id="formulario-general">
+          <div className="shell-inner">
+            <h2 className="section-title">Formulario General</h2>
+            <FormularioFUN />
+          </div>
+        </section>
       </main>
       <Footer />
       <AIAssistant />
