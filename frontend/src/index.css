@@ -565,3 +565,161 @@ button { cursor:pointer; }
   .whatsapp-float { bottom: 16px; right: 16px; width: 52px; height: 52px; }
 }
 
+
+/* Navbar dropdown for Formularios SDA */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.nav-dropdown-toggle:hover {
+  background: var(--mint);
+  border-color: var(--forest);
+  color: var(--forest);
+}
+[data-theme="dark"] .nav-dropdown-toggle {
+  background: var(--paper);
+  border-color: var(--line);
+  color: var(--ink);
+}
+[data-theme="dark"] .nav-dropdown-toggle:hover {
+  background: var(--mint);
+  border-color: var(--forest);
+  color: var(--forest);
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  min-width: 320px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 12px 28px rgba(23,59,53,.15);
+  padding: 8px;
+  z-index: 20;
+  animation: fadeIn 0.2s ease;
+}
+[data-theme="dark"] .nav-dropdown-menu {
+  background: var(--paper);
+  border-color: var(--line);
+  box-shadow: 0 12px 28px rgba(0,0,0,.3);
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-dropdown-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.nav-dropdown-menu a:hover {
+  background: var(--mint);
+  color: var(--forest);
+}
+[data-theme="dark"] .nav-dropdown-menu a:hover {
+  background: var(--mint);
+  color: var(--forest);
+}
+.nav-dropdown-menu a svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 760px) {
+  .nav-dropdown {
+    width: 100%;
+  }
+  .nav-dropdown-menu {
+    position: static;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+  }
+  .nav-dropdown-menu a {
+    padding: 12px 16px;
+  }
+}
+
+/* Dropdown section titles */
+.nav-dropdown-section {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+.nav-dropdown-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+.nav-dropdown-section-title {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--coral);
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+[data-theme="dark"] .nav-dropdown-section-title {
+  color: var(--coral);
+}
+
+/* ========================================
+   FORMATO PAGE - CENTRADO Y CONTENEDOR
+   ======================================== */
+
+.formato-page {
+  padding: 24px 0 48px;
+}
+
+.formato-page .formato-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Ajuste para el contenedor principal en páginas de formato */
+.app-shell .formato-page main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Asegurar que el contenido no se desborde en móviles */
+@media (max-width: 760px) {
+  .app-shell .formato-page main {
+    padding: 0 16px;
+  }
+  
+  .formato-container {
+    padding: 0 16px;
+  }
+}
+

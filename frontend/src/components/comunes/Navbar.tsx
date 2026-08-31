@@ -1,4 +1,4 @@
-import { Leaf, Menu, X, Sun, Moon, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Sun, Moon, User, LogOut, LayoutDashboard, FileSpreadsheet, FileText, ChevronDown } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '/logo.svg';
@@ -7,6 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [showFormulariosSDA, setShowFormulariosSDA] = useState(false);
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -41,9 +42,42 @@ export function Navbar() {
         <button className="menu-toggle" onClick={() => setOpen(!open)} aria-label="Abrir menú">
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
-        <nav className={`main-nav ${open ? 'is-open' : ''}`} aria-label="Navegación principal">
+<nav className={`main-nav ${open ? 'is-open' : ''}`} aria-label="Navegación principal">
           <Link to="/" onClick={() => setOpen(false)}>Inicio</Link>
           <Link to="/formulario-fun" onClick={() => setOpen(false)}>Formulario General</Link>
+          <Link to="/formulario-car" onClick={() => setOpen(false)}>Formulario CAR</Link>
+          
+          {/* Dropdown Formularios SDA */}
+          <div className="nav-dropdown">
+            <button className="nav-dropdown-toggle" onClick={() => setShowFormulariosSDA(!showFormulariosSDA)} aria-label="Formularios SDA">
+              <FileSpreadsheet size={18} /> Formularios
+              <ChevronDown size={16} />
+            </button>
+            {showFormulariosSDA && (
+              <div className="nav-dropdown-menu">
+                <div className="nav-dropdown-section">
+                  <span className="nav-dropdown-section-title">Formatos PM</span>
+                  <Link to="/formatos/f1" onClick={() => { setShowFormulariosSDA(false); setOpen(false); }}>
+                    <FileSpreadsheet size={18} /> Formato F1 - Solicitud Aprovechamiento (.xlsx)
+                  </Link>
+                  <Link to="/formatos/f2" onClick={() => { setShowFormulariosSDA(false); setOpen(false); }}>
+                    <FileSpreadsheet size={18} /> Formato F2 - Ficha Silvicultural (.xls)
+                  </Link>
+                  <Link to="/formatos/f3" onClick={() => { setShowFormulariosSDA(false); setOpen(false); }}>
+                    <FileText size={18} /> Formato F3 - Ficha Técnica Registro (.docx)
+                  </Link>
+                </div>
+                <div className="nav-dropdown-section">
+                  <span className="nav-dropdown-section-title">Formatos FG</span>
+                  <Link to="/formatos/fg1" onClick={() => { setShowFormulariosSDA(false); setOpen(false); }}>
+                    <FileSpreadsheet size={18} /> Formato FG1 - Registro Información (FGR-06)
+                  </Link>
+                  <Link to="/formatos/fg2" onClick={() => { setShowFormulariosSDA(false); setOpen(false); }}>
+                    <FileSpreadsheet size={18} /> Formato FG2 - Declaración Costos (FGR-29)
+                  </Link>
+                </div>
+              </div>
+            )}
           {isAuthenticated ? (
             <>
               {isAdmin && <Link to="/admin" onClick={() => setOpen(false)}><LayoutDashboard size={18} /> Panel Admin</Link>}
@@ -62,7 +96,7 @@ export function Navbar() {
               <Link to="/register" onClick={() => setOpen(false)} className="nav-link-register">Registrarse</Link>
             </>
           )}
-          <span className="status-chip"><span className="status-dot" /> Servicio activo</span>
+        </div>
         </nav>
         <button className="theme-toggle" onClick={toggleTheme} aria-label={isDark ? 'Modo claro' : 'Modo oscuro'}>
           {isDark ? <Sun size={20} /> : <Moon size={20} />}

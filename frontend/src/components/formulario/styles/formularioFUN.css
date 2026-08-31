@@ -455,11 +455,25 @@
   color: #f09885;
 }
 
+/* Screen reader only elements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ========================================
    ESPECIES - CARD LAYOUT
    ======================================== */
 .species-section {
   margin-top: 16px;
+  display:contents
 }
 .species-header {
   display: flex;

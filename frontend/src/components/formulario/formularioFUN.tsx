@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, useCallback, useEffect, ChangeEvent, FormEvent, FocusEvent } from 'react';
 import axios from 'axios';
 import './styles/formularioFUN.css';
 
@@ -217,11 +217,38 @@ const initialState: FormularioFUNData = {
 const FormularioFUN: React.FC = () => {
   const [formData, setFormData] = useState<FormularioFUNData>(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const handleChange = (
+  // Auto-save form data to localStorage
+  useEffect(() => {
+    const saveToLocalStorage = () => {
+      try {
+        localStorage.setItem('formularioFUN-draft', JSON.stringify(formData));
+      } catch (e) {
+        console.warn('Failed to save form data to localStorage:', e);
+      }
+    };
+
+    // Debounce the save operation
+    const handler = setTimeout(saveToLocalStorage, 1000);
+    return () => clearTimeout(handler);
+  }, [formData]);
+
+  // Load saved draft on initial render
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('formularioFUN-draft');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        setFormData(prev => ({ ...prev, ...parsedData }));
+      }
+    } catch (e) {
+      console.warn('Failed to load form data from localStorage:', e);
+    }
+  }, []);
+
+  const handleChange = useCallback((
     e: ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
@@ -264,9 +291,9 @@ const FormularioFUN: React.FC = () => {
     } else {
       setFormData((prev) => ({ ...prev, [field]: e.target.value as string }));
     }
-  };
+  }, []);
 
-  const addEspecie = () => {
+  const addEspecie = useCallback(() => {
     setFormData((prev) => ({
       ...prev,
       especies: [
@@ -284,17 +311,17 @@ const FormularioFUN: React.FC = () => {
         },
       ],
     }));
-  };
+  }, []);
 
-  const removeEspecie = (index: number) => {
+  const removeEspecie = useCallback((index: number) => {
     setFormData((prev) => {
       const newEspecies = [...prev.especies];
       newEspecies.splice(index, 1);
       return { ...prev, especies: newEspecies };
     });
-  };
+  }, []);
 
-  const addCoordenadaPlanar = () => {
+  const addCoordenadaPlanar = useCallback(() => {
     setFormData((prev) => ({
       ...prev,
       coordenadasPlanar: [
@@ -302,17 +329,17 @@ const FormularioFUN: React.FC = () => {
         { punto: '', x: '', y: '' },
       ],
     }));
-  };
+  }, []);
 
-  const removeCoordenadaPlanar = (index: number) => {
+  const removeCoordenadaPlanar = useCallback((index: number) => {
     setFormData((prev) => {
       const newCoords = [...prev.coordenadasPlanar];
       newCoords.splice(index, 1);
       return { ...prev, coordenadasPlanar: newCoords };
     });
-  };
+  }, []);
 
-  const addCoordenadaGeografica = () => {
+  const addCoordenadaGeografica = useCallback(() => {
     setFormData((prev) => ({
       ...prev,
       coordenadasGeografica: [
@@ -332,17 +359,17 @@ const FormularioFUN: React.FC = () => {
         },
       ],
     }));
-  };
+  }, []);
 
-  const removeCoordenadaGeografica = (index: number) => {
+  const removeCoordenadaGeografica = useCallback((index: number) => {
     setFormData((prev) => {
       const newCoords = [...prev.coordenadasGeografica];
       newCoords.splice(index, 1);
       return { ...prev, coordenadasGeografica: newCoords };
     });
-  };
+  }, []);
 
-  const validateForm = (): boolean => {
+  const validateForm = useCallback(() => {
     const newErrors: Partial<Record<keyof FormularioFUNData, string>> = {};
 
     const requiredFields: (keyof FormularioFUNData)[] = [
@@ -390,8 +417,13 @@ const FormularioFUN: React.FC = () => {
       newErrors.calidadPredioOtro = 'Especifique cuál';
     }
 
-    if (formData.costoProyecto.trim() && !/^[\d.,]+$/.test(formData.costoProyecto)) {
-      newErrors.costoProyecto = 'Ingrese un número válido';
+    // Improved currency validation
+    if (typeof formData.costoProyecto === 'string' && formData.costoProyecto.trim()) {
+      // Allow formats like: 1.000.000,00 or 1,000,000.00 or 1000000.00
+      const cleanedValue = formData.costoProyecto.replace(/[.\s]/g, '').replace(',', '.');
+      if (!/^\d+(\.\d{1,2})?$/.test(cleanedValue)) {
+        newErrors.costoProyecto = 'Ingrese un número válido (formato: 1.000.000,00)';
+      }
     }
 
     if (formData.tipoCoordenadas === 'planar' && formData.coordenadasPlanar.length === 0) {
@@ -414,22 +446,89 @@ const FormularioFUN: React.FC = () => {
         if (!esp.nombreCientifico.trim()) {
           (newErrors as Record<string, string>)[`especies[${index}].nombreCientifico`] = 'Requerido';
         }
+        // Validate that cantidad is a positive number
+        if (esp.cantidad.trim() && !/^\d+(\.\d+)?$/.test(esp.cantidad.trim())) {
+          (newErrors as Record<string, string>)[`especies[${index}].cantidad`] = 'Debe ser un número positivo';
+        }
       });
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]);
+
+  // Real-time validation on blur
+  const handleBlur = useCallback((_e: FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, field: keyof FormularioFUNData) => {
+    // Validate individual field on blur for better UX
+    const value = formData[field];
+
+    // Skip validation for empty values in some cases
+    if (typeof value === 'string' && !value.trim() &&
+        !['tipoSolicitud', 'tipoPersona', 'nombreRazonSocial', 'tipoIdentificacion',
+          'numeroIdentificacion', 'calidadPredio', 'tipoPredio', 'costoProyecto',
+          'costoProyectoLetras', 'modoAdquirirDerecho', 'categoriaProducto',
+          'metodoAprovechamiento', 'nombrePredio', 'superficieHa', 'direccionPredio',
+          'urbanoRural', 'departamento', 'municipio', 'nombreFirmante'].includes(field)) {
+      return;
+    }
+
+    // Validate the specific field
+    const fieldErrors: Partial<Record<keyof FormularioFUNData, string>> = {};
+
+    // Required field check
+    if (
+      (typeof value === 'string' && value.trim() === '') ||
+      (Array.isArray(value) && value.length === 0)
+    ) {
+      const requiredFields: (keyof FormularioFUNData)[] = [
+        'tipoSolicitud',
+        'tipoPersona',
+        'nombreRazonSocial',
+        'tipoIdentificacion',
+        'numeroIdentificacion',
+        'calidadPredio',
+        'tipoPredio',
+        'costoProyecto',
+        'costoProyectoLetras',
+        'modoAdquirirDerecho',
+        'categoriaProducto',
+        'metodoAprovechamiento',
+        'nombrePredio',
+        'superficieHa',
+        'direccionPredio',
+        'urbanoRural',
+        'departamento',
+        'municipio',
+        'nombreFirmante',
+      ];
+
+      if (requiredFields.includes(field)) {
+        fieldErrors[field] = 'Este campo es requerido';
+      }
+    }
+
+    // Special validations
+    if (field === 'costoProyecto' && typeof value === 'string' && value.trim()) {
+      const cleanedValue = value.replace(/[.\s]/g, '').replace(',', '.');
+      if (!/^\d+(\.\d{1,2})?$/.test(cleanedValue)) {
+        fieldErrors[field] = 'Ingrese un número válido (formato: 1.000.000,00)';
+      }
+    }
+
+    // Update errors state
+    setErrors(prev => ({
+      ...prev,
+      ...fieldErrors
+    }));
+  }, [formData]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setSubmitSuccess(false);
     setSubmitError(null);
 
     const isValid = validateForm();
     if (!isValid) {
-      setLoading(false);
       return;
     }
 
@@ -468,13 +567,22 @@ const FormularioFUN: React.FC = () => {
       } else {
         setSubmitError(err.message || 'Error desconocido');
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="formulario-fun">
+      {/* Visually hidden error summary for screen readers */}
+      {Object.keys(errors).length > 0 && (
+        <div className="sr-only" role="alert">
+          <h2>Errores de validación</h2>
+          <ul>
+            {Object.entries(errors).map(([field, message]) => (
+              <li key={field}>{String(field)}: {message}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <header className="form-header">
         <h1>Formato Único Nacional de Solicitud de Aprovechamiento Forestal y Manejo Sostenible de Flora Silvestre y Productos Forestales No Maderables</h1>
         <p>Nuevo/Prórroga</p>
@@ -495,6 +603,7 @@ const FormularioFUN: React.FC = () => {
                   value="nueva"
                   checked={formData.tipoSolicitud === 'nueva'}
                   onChange={(e) => handleChange(e, 'tipoSolicitud')}
+                  onBlur={(e) => handleBlur(e, 'tipoSolicitud')}
                 />
                 Nueva
               </label>
@@ -504,6 +613,7 @@ const FormularioFUN: React.FC = () => {
                   value="prorroga"
                   checked={formData.tipoSolicitud === 'prorroga'}
                   onChange={(e) => handleChange(e, 'tipoSolicitud')}
+                  onBlur={(e) => handleBlur(e, 'tipoSolicitud')}
                 />
                 Prórroga
               </label>
@@ -522,7 +632,7 @@ const FormularioFUN: React.FC = () => {
                   value="natural"
                   checked={formData.tipoPersona === 'natural'}
                   onChange={(e) => handleChange(e, 'tipoPersona')}
-                  
+                  onBlur={(e) => handleBlur(e, 'tipoPersona')}
                 />
                 Natural
               </label>
@@ -532,7 +642,7 @@ const FormularioFUN: React.FC = () => {
                   value="juridicaPublica"
                   checked={formData.tipoPersona === 'juridicaPublica'}
                   onChange={(e) => handleChange(e, 'tipoPersona')}
-                  
+                  onBlur={(e) => handleBlur(e, 'tipoPersona')}
                 />
                 Jurídica Pública
               </label>
@@ -542,7 +652,7 @@ const FormularioFUN: React.FC = () => {
                   value="juridicaPrivada"
                   checked={formData.tipoPersona === 'juridicaPrivada'}
                   onChange={(e) => handleChange(e, 'tipoPersona')}
-                  
+                  onBlur={(e) => handleBlur(e, 'tipoPersona')}
                 />
                 Jurídica Privada
               </label>
@@ -559,9 +669,14 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.nombreRazonSocial}
               onChange={(e) => handleChange(e, 'nombreRazonSocial')}
+              onBlur={(e) => handleBlur(e, 'nombreRazonSocial')}
               placeholder="Ej. ECO REGIÓN SAS BIC"
+              aria-invalid={!!errors.nombreRazonSocial}
+              aria-describedby={errors.nombreRazonSocial ? `error-nombreRazonSocial` : undefined}
             />
-            {errors.nombreRazonSocial && <p className="field-error">{errors.nombreRazonSocial}</p>}
+            {errors.nombreRazonSocial && (
+              <p id="error-nombreRazonSocial" className="field-error">{errors.nombreRazonSocial}</p>
+            )}
           </div>
 
           <div className="section-fields">
@@ -574,6 +689,7 @@ const FormularioFUN: React.FC = () => {
                     value="CC"
                     checked={formData.tipoIdentificacion === 'CC'}
                     onChange={(e) => handleChange(e, 'tipoIdentificacion')}
+                    onBlur={(e) => handleBlur(e, 'tipoIdentificacion')}
                   />
                   CC
                 </label>
@@ -583,6 +699,7 @@ const FormularioFUN: React.FC = () => {
                     value="CE"
                     checked={formData.tipoIdentificacion === 'CE'}
                     onChange={(e) => handleChange(e, 'tipoIdentificacion')}
+                    onBlur={(e) => handleBlur(e, 'tipoIdentificacion')}
                   />
                   CE
                 </label>
@@ -592,6 +709,7 @@ const FormularioFUN: React.FC = () => {
                     value="PA"
                     checked={formData.tipoIdentificacion === 'PA'}
                     onChange={(e) => handleChange(e, 'tipoIdentificacion')}
+                    onBlur={(e) => handleBlur(e, 'tipoIdentificacion')}
                   />
                   PA
                 </label>
@@ -601,6 +719,7 @@ const FormularioFUN: React.FC = () => {
                     value="NIT"
                     checked={formData.tipoIdentificacion === 'NIT'}
                     onChange={(e) => handleChange(e, 'tipoIdentificacion')}
+                    onBlur={(e) => handleBlur(e, 'tipoIdentificacion')}
                   />
                   NIT
                 </label>
@@ -614,9 +733,14 @@ const FormularioFUN: React.FC = () => {
                 type="text"
                 value={formData.numeroIdentificacion}
                 onChange={(e) => handleChange(e, 'numeroIdentificacion')}
+                onBlur={(e) => handleBlur(e, 'numeroIdentificacion')}
                 placeholder="Ej. 1234567890"
+                aria-invalid={!!errors.numeroIdentificacion}
+                aria-describedby={errors.numeroIdentificacion ? `error-numeroIdentificacion` : undefined}
               />
-              {errors.numeroIdentificacion && <p className="field-error">{errors.numeroIdentificacion}</p>}
+              {errors.numeroIdentificacion && (
+                <p id="error-numeroIdentificacion" className="field-error">{errors.numeroIdentificacion}</p>
+              )}
             </div>
           </div>
 
@@ -628,8 +752,14 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.apoderadoNombre}
               onChange={(e) => handleChange(e, 'apoderadoNombre')}
+              onBlur={(e) => handleBlur(e, 'apoderadoNombre')}
               placeholder="Nombre completo del apoderado"
+              aria-invalid={!!errors.apoderadoNombre}
+              aria-describedby={errors.apoderadoNombre ? `error-apoderadoNombre` : undefined}
             />
+            {errors.apoderadoNombre && (
+              <p id="error-apoderadoNombre" className="field-error">{errors.apoderadoNombre}</p>
+            )}
           </div>
           <div className="field">
             <label>Tipo de identificación</label>
@@ -640,6 +770,7 @@ const FormularioFUN: React.FC = () => {
                   value="CC"
                   checked={formData.apoderadoTipoIdentificacion === 'CC'}
                   onChange={(e) => handleChange(e, 'apoderadoTipoIdentificacion')}
+                  onBlur={(e) => handleBlur(e, 'apoderadoTipoIdentificacion')}
                 />
                 CC
               </label>
@@ -649,6 +780,7 @@ const FormularioFUN: React.FC = () => {
                   value="CE"
                   checked={formData.apoderadoTipoIdentificacion === 'CE'}
                   onChange={(e) => handleChange(e, 'apoderadoTipoIdentificacion')}
+                  onBlur={(e) => handleBlur(e, 'apoderadoTipoIdentificacion')}
                 />
                 CE
               </label>
@@ -658,6 +790,7 @@ const FormularioFUN: React.FC = () => {
                   value="PA"
                   checked={formData.apoderadoTipoIdentificacion === 'PA'}
                   onChange={(e) => handleChange(e, 'apoderadoTipoIdentificacion')}
+                  onBlur={(e) => handleBlur(e, 'apoderadoTipoIdentificacion')}
                 />
                 PA
               </label>
@@ -669,8 +802,14 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.apoderadoNumeroIdentificacion}
               onChange={(e) => handleChange(e, 'apoderadoNumeroIdentificacion')}
+              onBlur={(e) => handleBlur(e, 'apoderadoNumeroIdentificacion')}
               placeholder="Número de identificación"
+              aria-invalid={!!errors.apoderadoNumeroIdentificacion}
+              aria-describedby={errors.apoderadoNumeroIdentificacion ? `error-apoderadoNumeroIdentificacion` : undefined}
             />
+            {errors.apoderadoNumeroIdentificacion && (
+              <p id="error-apoderadoNumeroIdentificacion" className="field-error">{errors.apoderadoNumeroIdentificacion}</p>
+            )}
           </div>
           <div className="field">
             <label>TP (Tarjeta Profesional)</label>
@@ -678,8 +817,14 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.apoderadoTP}
               onChange={(e) => handleChange(e, 'apoderadoTP')}
+              onBlur={(e) => handleBlur(e, 'apoderadoTP')}
               placeholder="Número de tarjeta profesional"
+              aria-invalid={!!errors.apoderadoTP}
+              aria-describedby={errors.apoderadoTP ? `error-apoderadoTP` : undefined}
             />
+            {errors.apoderadoTP && (
+              <p id="error-apoderadoTP" className="field-error">{errors.apoderadoTP}</p>
+            )}
           </div>
         </div>
 
@@ -694,6 +839,7 @@ const FormularioFUN: React.FC = () => {
                   value="propietario"
                   checked={formData.calidadPredio === 'propietario'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Propietario
               </label>
@@ -703,6 +849,7 @@ const FormularioFUN: React.FC = () => {
                   value="poseedor"
                   checked={formData.calidadPredio === 'poseedor'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Poseedor
               </label>
@@ -712,6 +859,7 @@ const FormularioFUN: React.FC = () => {
                   value="consejoComunitario"
                   checked={formData.calidadPredio === 'consejoComunitario'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Consejo comunitario
               </label>
@@ -721,6 +869,7 @@ const FormularioFUN: React.FC = () => {
                   value="tenedor"
                   checked={formData.calidadPredio === 'tenedor'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Tenedor
               </label>
@@ -730,6 +879,7 @@ const FormularioFUN: React.FC = () => {
                   value="ocupante"
                   checked={formData.calidadPredio === 'ocupante'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Ocupante
               </label>
@@ -739,6 +889,7 @@ const FormularioFUN: React.FC = () => {
                   value="resguardoIndigena"
                   checked={formData.calidadPredio === 'resguardoIndigena'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Resguardo indígena
               </label>
@@ -748,6 +899,7 @@ const FormularioFUN: React.FC = () => {
                   value="otro"
                   checked={formData.calidadPredio === 'otro'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Otro
               </label>
@@ -757,6 +909,7 @@ const FormularioFUN: React.FC = () => {
                   value="autorizado"
                   checked={formData.calidadPredio === 'autorizado'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Autorizado
               </label>
@@ -766,6 +919,7 @@ const FormularioFUN: React.FC = () => {
                   value="enteTerritorial"
                   checked={formData.calidadPredio === 'enteTerritorial'}
                   onChange={(e) => handleChange(e, 'calidadPredio')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredio')}
                 />
                 Ente territorial
               </label>
@@ -778,9 +932,14 @@ const FormularioFUN: React.FC = () => {
                   type="text"
                   value={formData.calidadPredioOtro}
                   onChange={(e) => handleChange(e, 'calidadPredioOtro')}
+                  onBlur={(e) => handleBlur(e, 'calidadPredioOtro')}
                   placeholder="Ej. Comunidad indígena"
+                  aria-invalid={!!errors.calidadPredioOtro}
+                  aria-describedby={errors.calidadPredioOtro ? `error-calidadPredioOtro` : undefined}
                 />
-                {errors.calidadPredioOtro && <p className="field-error">{errors.calidadPredioOtro}</p>}
+                {errors.calidadPredioOtro && (
+                  <p id="error-calidadPredioOtro" className="field-error">{errors.calidadPredioOtro}</p>
+                )}
               </div>
             )}
           </div>
@@ -797,6 +956,7 @@ const FormularioFUN: React.FC = () => {
                   value="publico"
                   checked={formData.tipoPredio === 'publico'}
                   onChange={(e) => handleChange(e, 'tipoPredio')}
+                  onBlur={(e) => handleBlur(e, 'tipoPredio')}
                 />
                 Público
               </label>
@@ -806,6 +966,7 @@ const FormularioFUN: React.FC = () => {
                   value="colectivo"
                   checked={formData.tipoPredio === 'colectivo'}
                   onChange={(e) => handleChange(e, 'tipoPredio')}
+                  onBlur={(e) => handleBlur(e, 'tipoPredio')}
                 />
                 Colectivo
               </label>
@@ -815,6 +976,7 @@ const FormularioFUN: React.FC = () => {
                   value="privado"
                   checked={formData.tipoPredio === 'privado'}
                   onChange={(e) => handleChange(e, 'tipoPredio')}
+                  onBlur={(e) => handleBlur(e, 'tipoPredio')}
                 />
                 Privado
               </label>
@@ -834,9 +996,14 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.costoProyecto}
               onChange={(e) => handleChange(e, 'costoProyecto')}
+              onBlur={(e) => handleBlur(e, 'costoProyecto')}
               placeholder="Ej. 20.568.708.950"
+              aria-invalid={!!errors.costoProyecto}
+              aria-describedby={errors.costoProyecto ? `error-costoProyecto` : undefined}
             />
-            {errors.costoProyecto && <p className="field-error">{errors.costoProyecto}</p>}
+            {errors.costoProyecto && (
+              <p id="error-costoProyecto" className="field-error">{errors.costoProyecto}</p>
+            )}
           </div>
           <div className="field">
             <label>Valor en letras:</label>
@@ -844,9 +1011,14 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.costoProyectoLetras}
               onChange={(e) => handleChange(e, 'costoProyectoLetras')}
+              onBlur={(e) => handleBlur(e, 'costoProyectoLetras')}
               placeholder="Veinte mil quinientos sesenta y ocho millones setecientos ocho"
+              aria-invalid={!!errors.costoProyectoLetras}
+              aria-describedby={errors.costoProyectoLetras ? `error-costoProyectoLetras` : undefined}
             />
-            {errors.costoProyectoLetras && <p className="field-error">{errors.costoProyectoLetras}</p>}
+            {errors.costoProyectoLetras && (
+              <p id="error-costoProyectoLetras" className="field-error">{errors.costoProyectoLetras}</p>
+            )}
           </div>
         </div>
       </section>
@@ -864,9 +1036,14 @@ const FormularioFUN: React.FC = () => {
                 type="text"
                 value={formData.numeroExpediente}
                 onChange={(e) => handleChange(e, 'numeroExpediente')}
+                onBlur={(e) => handleBlur(e, 'numeroExpediente')}
                 placeholder="Ej. EXP-2023-001"
+                aria-invalid={!!errors.numeroExpediente}
+                aria-describedby={errors.numeroExpediente ? `error-numeroExpediente` : undefined}
               />
-              {errors.numeroExpediente && <p className="field-error">{errors.numeroExpediente}</p>}
+              {errors.numeroExpediente && (
+                <p id="error-numeroExpediente" className="field-error">{errors.numeroExpediente}</p>
+              )}
             </div>
             <div className="field field-wide">
               <label>Indique el número de acto administrativo mediante el cual se otorgó el derecho al uso del recurso forestal (permiso, asociación, concesión forestal o autorización): <b>*</b></label>
@@ -874,9 +1051,14 @@ const FormularioFUN: React.FC = () => {
                 type="text"
                 value={formData.numeroActoAdministrativo}
                 onChange={(e) => handleChange(e, 'numeroActoAdministrativo')}
+                onBlur={(e) => handleBlur(e, 'numeroActoAdministrativo')}
                 placeholder="Ej. RESOLUCIÓN 123/2023"
+                aria-invalid={!!errors.numeroActoAdministrativo}
+                aria-describedby={errors.numeroActoAdministrativo ? `error-numeroActoAdministrativo` : undefined}
               />
-              {errors.numeroActoAdministrativo && <p className="field-error">{errors.numeroActoAdministrativo}</p>}
+              {errors.numeroActoAdministrativo && (
+                <p id="error-numeroActoAdministrativo" className="field-error">{errors.numeroActoAdministrativo}</p>
+              )}
             </div>
           </div>
           <p style={{ marginTop: '16px', color: 'var(--ink-soft)', fontSize: '13px' }}>
@@ -906,7 +1088,8 @@ const FormularioFUN: React.FC = () => {
                         value="permisoPublico"
                         checked={formData.modoAdquirirDerecho === 'permisoPublico'}
                         onChange={(e) => handleChange(e, 'modoAdquirirDerecho')}
-                        
+                        onBlur={(e) => handleBlur(e, 'modoAdquirirDerecho')}
+
                       />
                       Permiso
                     </label>
@@ -916,7 +1099,8 @@ const FormularioFUN: React.FC = () => {
                         value="asociacionPublico"
                         checked={formData.modoAdquirirDerecho === 'asociacionPublico'}
                         onChange={(e) => handleChange(e, 'modoAdquirirDerecho')}
-                        
+                        onBlur={(e) => handleBlur(e, 'modoAdquirirDerecho')}
+
                       />
                       Asociación
                     </label>
@@ -926,7 +1110,8 @@ const FormularioFUN: React.FC = () => {
                         value="concesionForestalPublico"
                         checked={formData.modoAdquirirDerecho === 'concesionForestalPublico'}
                         onChange={(e) => handleChange(e, 'modoAdquirirDerecho')}
-                        
+                        onBlur={(e) => handleBlur(e, 'modoAdquirirDerecho')}
+
                       />
                       Concesión Forestal
                     </label>
@@ -941,7 +1126,8 @@ const FormularioFUN: React.FC = () => {
                         value="autorizacionPrivadaColectiva"
                         checked={formData.modoAdquirirDerecho === 'autorizacionPrivadaColectiva'}
                         onChange={(e) => handleChange(e, 'modoAdquirirDerecho')}
-                        
+                        onBlur={(e) => handleBlur(e, 'modoAdquirirDerecho')}
+
                       />
                       Autorización
                     </label>
@@ -967,7 +1153,8 @@ const FormularioFUN: React.FC = () => {
                       value="maderables"
                       checked={formData.categoriaProducto === 'maderables'}
                       onChange={(e) => handleChange(e, 'categoriaProducto')}
-                      
+                      onBlur={(e) => handleBlur(e, 'categoriaProducto')}
+
                     />
                     A. Productos forestales maderables
                   </label>
@@ -977,7 +1164,8 @@ const FormularioFUN: React.FC = () => {
                       value="floraSilvestreNoMaderables"
                       checked={formData.categoriaProducto === 'floraSilvestreNoMaderables'}
                       onChange={(e) => handleChange(e, 'categoriaProducto')}
-                      
+                      onBlur={(e) => handleBlur(e, 'categoriaProducto')}
+
                     />
                     B. Manejo Sostenible de Flora Silvestre y los Productos Forestales No Maderables
                   </label>
@@ -987,7 +1175,8 @@ const FormularioFUN: React.FC = () => {
                       value="arbolesAislados"
                       checked={formData.categoriaProducto === 'arbolesAislados'}
                       onChange={(e) => handleChange(e, 'categoriaProducto')}
-                      
+                      onBlur={(e) => handleBlur(e, 'categoriaProducto')}
+
                     />
                     C. Árboles Aislados
                   </label>
@@ -997,7 +1186,8 @@ const FormularioFUN: React.FC = () => {
                       value="guadualesBambusales"
                       checked={formData.categoriaProducto === 'guadualesBambusales'}
                       onChange={(e) => handleChange(e, 'categoriaProducto')}
-                      
+                      onBlur={(e) => handleBlur(e, 'categoriaProducto')}
+
                     />
                     D. Guaduales y bambusales
                   </label>
@@ -1017,7 +1207,8 @@ const FormularioFUN: React.FC = () => {
                         value="persistente"
                         checked={formData.claseAprovechamientoMaderables === 'persistente'}
                         onChange={(e) => handleChange(e, 'claseAprovechamientoMaderables')}
-                        
+                        onBlur={(e) => handleBlur(e, 'claseAprovechamientoMaderables')}
+
                       />
                       Persistente
                     </label>
@@ -1027,7 +1218,8 @@ const FormularioFUN: React.FC = () => {
                         value="unico"
                         checked={formData.claseAprovechamientoMaderables === 'unico'}
                         onChange={(e) => handleChange(e, 'claseAprovechamientoMaderables')}
-                        
+                        onBlur={(e) => handleBlur(e, 'claseAprovechamientoMaderables')}
+
                       />
                       Único
                     </label>
@@ -1037,7 +1229,8 @@ const FormularioFUN: React.FC = () => {
                         value="domestico"
                         checked={formData.claseAprovechamientoMaderables === 'domestico'}
                         onChange={(e) => handleChange(e, 'claseAprovechamientoMaderables')}
-                        
+                        onBlur={(e) => handleBlur(e, 'claseAprovechamientoMaderables')}
+
                       />
                       Doméstico
                     </label>
@@ -1047,7 +1240,8 @@ const FormularioFUN: React.FC = () => {
                         value="manejoForestalUnificado"
                         checked={formData.claseAprovechamientoMaderables === 'manejoForestalUnificado'}
                         onChange={(e) => handleChange(e, 'claseAprovechamientoMaderables')}
-                        
+                        onBlur={(e) => handleBlur(e, 'claseAprovechamientoMaderables')}
+
                       />
                       Manejo Forestal Unificado
                     </label>
@@ -1069,7 +1263,8 @@ const FormularioFUN: React.FC = () => {
                         value="domestico"
                         checked={formData.claseManejoSostenible === 'domestico'}
                         onChange={(e) => handleChange(e, 'claseManejoSostenible')}
-                        
+                        onBlur={(e) => handleBlur(e, 'claseManejoSostenible')}
+
                       />
                       Doméstico
                     </label>
@@ -1079,7 +1274,8 @@ const FormularioFUN: React.FC = () => {
                         value="persistente"
                         checked={formData.claseManejoSostenible === 'persistente'}
                         onChange={(e) => handleChange(e, 'claseManejoSostenible')}
-                        
+                        onBlur={(e) => handleBlur(e, 'claseManejoSostenible')}
+
                       />
                       Persistente
                     </label>
@@ -1129,7 +1325,8 @@ const FormularioFUN: React.FC = () => {
                             value="pequenos"
                             checked={formData.categoriaPersistente === 'pequenos'}
                             onChange={(e) => handleChange(e, 'categoriaPersistente')}
-                            
+                            onBlur={(e) => handleBlur(e, 'categoriaPersistente')}
+
                           />
                           Pequeños (1 a 10 SMLMV)
                         </label>
@@ -1139,7 +1336,8 @@ const FormularioFUN: React.FC = () => {
                             value="medianos"
                             checked={formData.categoriaPersistente === 'medianos'}
                             onChange={(e) => handleChange(e, 'categoriaPersistente')}
-                            
+                            onBlur={(e) => handleBlur(e, 'categoriaPersistente')}
+
                           />
                           Medianos (10.1 a 30 SMLMV)
                         </label>
@@ -1149,7 +1347,8 @@ const FormularioFUN: React.FC = () => {
                             value="grandes"
                             checked={formData.categoriaPersistente === 'grandes'}
                             onChange={(e) => handleChange(e, 'categoriaPersistente')}
-                            
+                            onBlur={(e) => handleBlur(e, 'categoriaPersistente')}
+
                           />
                           Grandes ({'>'}30 SMLMV)
                         </label>
@@ -1180,7 +1379,8 @@ const FormularioFUN: React.FC = () => {
                         value="tipo1"
                         checked={formData.tipoAprovechamientoGuaduales === 'tipo1'}
                         onChange={(e) => handleChange(e, 'tipoAprovechamientoGuaduales')}
-                        
+                        onBlur={(e) => handleBlur(e, 'tipoAprovechamientoGuaduales')}
+
                       />
                       Tipo 1
                     </label>
@@ -1190,7 +1390,8 @@ const FormularioFUN: React.FC = () => {
                         value="tipo2"
                         checked={formData.tipoAprovechamientoGuaduales === 'tipo2'}
                         onChange={(e) => handleChange(e, 'tipoAprovechamientoGuaduales')}
-                        
+                        onBlur={(e) => handleBlur(e, 'tipoAprovechamientoGuaduales')}
+
                       />
                       Tipo 2
                     </label>
@@ -1200,7 +1401,8 @@ const FormularioFUN: React.FC = () => {
                         value="cambioUsoSuelo"
                         checked={formData.tipoAprovechamientoGuaduales === 'cambioUsoSuelo'}
                         onChange={(e) => handleChange(e, 'tipoAprovechamientoGuaduales')}
-                        
+                        onBlur={(e) => handleBlur(e, 'tipoAprovechamientoGuaduales')}
+
                       />
                       Cambio definitivo de uso del suelo
                     </label>
@@ -1210,7 +1412,8 @@ const FormularioFUN: React.FC = () => {
                         value="establecimientoManejo"
                         checked={formData.tipoAprovechamientoGuaduales === 'establecimientoManejo'}
                         onChange={(e) => handleChange(e, 'tipoAprovechamientoGuaduales')}
-                        
+                        onBlur={(e) => handleBlur(e, 'tipoAprovechamientoGuaduales')}
+
                       />
                       Establecimiento y Manejo
                     </label>
@@ -1651,7 +1854,8 @@ const FormularioFUN: React.FC = () => {
                 value="mecanico"
                 checked={formData.metodoAprovechamiento === 'mecanico'}
                 onChange={(e) => handleChange(e, 'metodoAprovechamiento')}
-                
+                onBlur={(e) => handleBlur(e, 'metodoAprovechamiento')}
+
               />
               Mecánico
             </label>
@@ -1661,7 +1865,8 @@ const FormularioFUN: React.FC = () => {
                 value="manual"
                 checked={formData.metodoAprovechamiento === 'manual'}
                 onChange={(e) => handleChange(e, 'metodoAprovechamiento')}
-                
+                onBlur={(e) => handleBlur(e, 'metodoAprovechamiento')}
+
               />
               Manual
             </label>
@@ -1671,7 +1876,8 @@ const FormularioFUN: React.FC = () => {
                 value="mecanicoManual"
                 checked={formData.metodoAprovechamiento === 'mecanicoManual'}
                 onChange={(e) => handleChange(e, 'metodoAprovechamiento')}
-                
+                onBlur={(e) => handleBlur(e, 'metodoAprovechamiento')}
+
               />
               Mecánico-Manual
             </label>
@@ -1887,7 +2093,7 @@ const FormularioFUN: React.FC = () => {
                     value="caidoCausasNaturales"
                     checked={formData.estadoIndividuo === 'caidoCausasNaturales'}
                     onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                    
+                    onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                   />
                   Caído por causas naturales
                 </label>
@@ -1897,7 +2103,7 @@ const FormularioFUN: React.FC = () => {
                     value="muertoCausasNaturales"
                     checked={formData.estadoIndividuo === 'muertoCausasNaturales'}
                     onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                    
+                    onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                   />
                   Muerto por causas naturales
                 </label>
@@ -1907,7 +2113,7 @@ const FormularioFUN: React.FC = () => {
                     value="razonesFitosanitarias"
                     checked={formData.estadoIndividuo === 'razonesFitosanitarias'}
                     onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                    
+                    onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                   />
                   Razones de orden fitosanitario
                 </label>
@@ -1919,7 +2125,7 @@ const FormularioFUN: React.FC = () => {
                         value="caido"
                         checked={formData.estadoIndividuo === 'caido'}
                         onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                        
+                        onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                       />
                       Caído
                     </label>
@@ -1929,7 +2135,7 @@ const FormularioFUN: React.FC = () => {
                         value="muerto"
                         checked={formData.estadoIndividuo === 'muerto'}
                         onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                        
+                        onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                       />
                       Muerto
                     </label>
@@ -1939,7 +2145,7 @@ const FormularioFUN: React.FC = () => {
                         value="enfermo"
                         checked={formData.estadoIndividuo === 'enfermo'}
                         onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                        
+                        onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                       />
                       Enfermo
                     </label>
@@ -1958,11 +2164,13 @@ const FormularioFUN: React.FC = () => {
                     type="text"
                     value={formData.razonesFitosanitariasEspecificar}
                     onChange={(e) => handleChange(e, 'razonesFitosanitariasEspecificar')}
+                    onBlur={(e) => handleBlur(e, 'razonesFitosanitariasEspecificar')}
                     placeholder="Ej. Plaga de insectos"
-                    
+                    aria-invalid={!!errors.razonesFitosanitariasEspecificar}
+                    aria-describedby={errors.razonesFitosanitariasEspecificar ? `error-razonesFitosanitariasEspecificar` : undefined}
                   />
                   {errors.razonesFitosanitariasEspecificar && (
-                    <p className="field-error">{errors.razonesFitosanitariasEspecificar}</p>
+                    <p id="error-razonesFitosanitariasEspecificar" className="field-error">{errors.razonesFitosanitariasEspecificar}</p>
                   )}
                 </div>
               )}
@@ -1981,7 +2189,7 @@ const FormularioFUN: React.FC = () => {
                     value="caido"
                     checked={formData.estadoIndividuo === 'caido'}
                     onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                    
+                    onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                   />
                   Caído
                 </label>
@@ -1991,7 +2199,7 @@ const FormularioFUN: React.FC = () => {
                     value="muerto"
                     checked={formData.estadoIndividuo === 'muerto'}
                     onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                    
+                    onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                   />
                   Muerto
                 </label>
@@ -2001,7 +2209,7 @@ const FormularioFUN: React.FC = () => {
                     value="enfermo"
                     checked={formData.estadoIndividuo === 'enfermo'}
                     onChange={(e) => handleChange(e, 'estadoIndividuo')}
-                    
+                    onBlur={(e) => handleBlur(e, 'estadoIndividuo')}
                   />
                   Enfermo
                 </label>
@@ -2019,7 +2227,7 @@ const FormularioFUN: React.FC = () => {
                     value="estabilidadSuelos"
                     checked={formData.causaPerjuicio === 'estabilidadSuelos'}
                     onChange={(e) => handleChange(e, 'causaPerjuicio')}
-                    
+                    onBlur={(e) => handleBlur(e, 'causaPerjuicio')}
                   />
                   Estabilidad de suelos
                 </label>
@@ -2029,7 +2237,7 @@ const FormularioFUN: React.FC = () => {
                     value="canalAgua"
                     checked={formData.causaPerjuicio === 'canalAgua'}
                     onChange={(e) => handleChange(e, 'causaPerjuicio')}
-                    
+                    onBlur={(e) => handleBlur(e, 'causaPerjuicio')}
                   />
                   Canal de agua
                 </label>
@@ -2039,7 +2247,7 @@ const FormularioFUN: React.FC = () => {
                     value="obrasInfraestructuraEdificaciones"
                     checked={formData.causaPerjuicio === 'obrasInfraestructuraEdificaciones'}
                     onChange={(e) => handleChange(e, 'causaPerjuicio')}
-                    
+                    onBlur={(e) => handleBlur(e, 'causaPerjuicio')}
                   />
                   Obras de infraestructura/edificaciones
                 </label>
@@ -2049,7 +2257,7 @@ const FormularioFUN: React.FC = () => {
                     value="otro"
                     checked={formData.causaPerjuicio === 'otro'}
                     onChange={(e) => handleChange(e, 'causaPerjuicio')}
-                    
+                    onBlur={(e) => handleBlur(e, 'causaPerjuicio')}
                   />
                   Otro
                 </label>
@@ -2066,11 +2274,13 @@ const FormularioFUN: React.FC = () => {
                     type="text"
                     value={formData.causaPerjuicioOtro}
                     onChange={(e) => handleChange(e, 'causaPerjuicioOtro')}
+                    onBlur={(e) => handleBlur(e, 'causaPerjuicioOtro')}
                     placeholder="Ej. Contaminación"
-                    
+                    aria-invalid={!!errors.causaPerjuicioOtro}
+                    aria-describedby={errors.causaPerjuicioOtro ? `error-causaPerjuicioOtro` : undefined}
                   />
                   {errors.causaPerjuicioOtro && (
-                    <p className="field-error">{errors.causaPerjuicioOtro}</p>
+                    <p id="error-causaPerjuicioOtro" className="field-error">{errors.causaPerjuicioOtro}</p>
                   )}
                 </div>
               )}
@@ -2089,7 +2299,7 @@ const FormularioFUN: React.FC = () => {
                     value="construccionRealizacion"
                     checked={formData.actividadInfraestructura === 'construccionRealizacion'}
                     onChange={(e) => handleChange(e, 'actividadInfraestructura')}
-                    
+                    onBlur={(e) => handleBlur(e, 'actividadInfraestructura')}
                   />
                   Construcción / Realización
                 </label>
@@ -2099,7 +2309,7 @@ const FormularioFUN: React.FC = () => {
                     value="remodelacion"
                     checked={formData.actividadInfraestructura === 'remodelacion'}
                     onChange={(e) => handleChange(e, 'actividadInfraestructura')}
-                    
+                    onBlur={(e) => handleBlur(e, 'actividadInfraestructura')}
                   />
                   Remodelación
                 </label>
@@ -2109,7 +2319,7 @@ const FormularioFUN: React.FC = () => {
                     value="ampliacion"
                     checked={formData.actividadInfraestructura === 'ampliacion'}
                     onChange={(e) => handleChange(e, 'actividadInfraestructura')}
-                    
+                    onBlur={(e) => handleBlur(e, 'actividadInfraestructura')}
                   />
                   Ampliación
                 </label>
@@ -2119,7 +2329,7 @@ const FormularioFUN: React.FC = () => {
                     value="instalacion"
                     checked={formData.actividadInfraestructura === 'instalacion'}
                     onChange={(e) => handleChange(e, 'actividadInfraestructura')}
-                    
+                    onBlur={(e) => handleBlur(e, 'actividadInfraestructura')}
                   />
                   Instalación
                 </label>
@@ -2129,7 +2339,7 @@ const FormularioFUN: React.FC = () => {
                     value="similares"
                     checked={formData.actividadInfraestructura === 'similares'}
                     onChange={(e) => handleChange(e, 'actividadInfraestructura')}
-                    
+                    onBlur={(e) => handleBlur(e, 'actividadInfraestructura')}
                   />
                   Similares
                 </label>
@@ -2146,11 +2356,13 @@ const FormularioFUN: React.FC = () => {
                     type="text"
                     value={formData.similaresEspecificar}
                     onChange={(e) => handleChange(e, 'similaresEspecificar')}
+                    onBlur={(e) => handleBlur(e, 'similaresEspecificar')}
                     placeholder="Ej. Mantenimiento de vías"
-                    
+                    aria-invalid={!!errors.similaresEspecificar}
+                    aria-describedby={errors.similaresEspecificar ? `error-similaresEspecificar` : undefined}
                   />
                   {errors.similaresEspecificar && (
-                    <p className="field-error">{errors.similaresEspecificar}</p>
+                    <p id="error-similaresEspecificar" className="field-error">{errors.similaresEspecificar}</p>
                   )}
                 </div>
               )}
@@ -2173,7 +2385,8 @@ const FormularioFUN: React.FC = () => {
                 value="si"
                 checked={formData.notificacionElectronica === 'si'}
                 onChange={(e) => handleChange(e, 'notificacionElectronica')}
-                
+                onBlur={(e) => handleBlur(e, 'notificacionElectronica')}
+
               />
               Sí
             </label>
@@ -2183,7 +2396,8 @@ const FormularioFUN: React.FC = () => {
                 value="no"
                 checked={formData.notificacionElectronica === 'no'}
                 onChange={(e) => handleChange(e, 'notificacionElectronica')}
-                
+                onBlur={(e) => handleBlur(e, 'notificacionElectronica')}
+
               />
               No
             </label>
@@ -2202,11 +2416,12 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.correoElectronico}
               onChange={(e) => handleChange(e, 'correoElectronico')}
+              onBlur={(e) => handleBlur(e, 'correoElectronico')}
               placeholder="ejemplo@dominio.com"
-              
+
             />
             {errors.correoElectronico && (
-              <p className="field-error">{errors.correoElectronico}</p>
+              <p id="error-correoElectronico" className="field-error">{errors.correoElectronico}</p>
             )}
             <label className="block text-sm font-medium mb-1 mt-2">
               Teléfono(s): <b>*</b>
@@ -2215,11 +2430,12 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.telefonos}
               onChange={(e) => handleChange(e, 'telefonos')}
+              onBlur={(e) => handleBlur(e, 'telefonos')}
               placeholder="+57 300 123 4567"
-              
+
             />
             {errors.telefonos && (
-              <p className="field-error">{errors.telefonos}</p>
+              <p id="error-telefonos" className="field-error">{errors.telefonos}</p>
             )}
           </div>
         )}
@@ -2233,11 +2449,12 @@ const FormularioFUN: React.FC = () => {
               type="text"
               value={formData.direccionNotificacion}
               onChange={(e) => handleChange(e, 'direccionNotificacion')}
+              onBlur={(e) => handleBlur(e, 'direccionNotificacion')}
               placeholder="Ej. Calle 123 # 45-67"
-              
+
             />
             {errors.direccionNotificacion && (
-              <p className="field-error">{errors.direccionNotificacion}</p>
+              <p id="error-direccionNotificacion" className="field-error">{errors.direccionNotificacion}</p>
             )}
             <div className="section-fields">
               <div>
@@ -2248,11 +2465,12 @@ const FormularioFUN: React.FC = () => {
                   type="text"
                   value={formData.municipioNotificacion}
                   onChange={(e) => handleChange(e, 'municipioNotificacion')}
+                  onBlur={(e) => handleBlur(e, 'municipioNotificacion')}
                   placeholder="Ej. Medellín"
-                  
+
                 />
                 {errors.municipioNotificacion && (
-                  <p className="field-error">{errors.municipioNotificacion}</p>
+                  <p id="error-municipioNotificacion" className="field-error">{errors.municipioNotificacion}</p>
                 )}
               </div>
               <div>
@@ -2263,11 +2481,12 @@ const FormularioFUN: React.FC = () => {
                   type="text"
                   value={formData.nombreCentroPobladoVeredaCorregimiento}
                   onChange={(e) => handleChange(e, 'nombreCentroPobladoVeredaCorregimiento')}
+                  onBlur={(e) => handleBlur(e, 'nombreCentroPobladoVeredaCorregimiento')}
                   placeholder="Ej. San Cristóbal"
-                  
+
                 />
                 {errors.nombreCentroPobladoVeredaCorregimiento && (
-                  <p className="field-error">{errors.nombreCentroPobladoVeredaCorregimiento}</p>
+                  <p id="error-nombreCentroPobladoVeredaCorregimiento" className="field-error">{errors.nombreCentroPobladoVeredaCorregimiento}</p>
                 )}
               </div>
               <div>
@@ -2278,11 +2497,89 @@ const FormularioFUN: React.FC = () => {
                   type="text"
                   value={formData.departamentoNotificacion}
                   onChange={(e) => handleChange(e, 'departamentoNotificacion')}
+                  onBlur={(e) => handleBlur(e, 'departamentoNotificacion')}
                   placeholder="Ej. Antioquia"
-                  
+
                 />
                 {errors.departamentoNotificacion && (
-                  <p className="field-error">{errors.departamentoNotificacion}</p>
+                  <p id="error-departamentoNotificacion" className="field-error">{errors.departamentoNotificacion}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {formData.notificacionElectronica === 'no' && (
+          <div >
+            <label className="field">
+              Dirección de notificación: <b>*</b>
+            </label>
+            <input
+              type="text"
+              value={formData.direccionNotificacion}
+              onChange={(e) => handleChange(e, 'direccionNotificacion')}
+              onBlur={(e) => handleBlur(e, 'direccionNotificacion')}
+              placeholder="Ej. Calle 123 # 45-67"
+
+              aria-invalid={!!errors.direccionNotificacion}
+              aria-describedby={errors.direccionNotificacion ? `error-direccionNotificacion` : undefined}
+            />
+            {errors.direccionNotificacion && (
+              <p id="error-direccionNotificacion" className="field-error">{errors.direccionNotificacion}</p>
+            )}
+            <div className="section-fields">
+              <div>
+                <label className="field">
+                  Municipio: <b>*</b>
+                </label>
+                <input
+                  type="text"
+                  value={formData.municipioNotificacion}
+                  onChange={(e) => handleChange(e, 'municipioNotificacion')}
+                  onBlur={(e) => handleBlur(e, 'municipioNotificacion')}
+                  placeholder="Ej. Medellín"
+
+                  aria-invalid={!!errors.municipioNotificacion}
+                  aria-describedby={errors.municipioNotificacion ? `error-municipioNotificacion` : undefined}
+                />
+                {errors.municipioNotificacion && (
+                  <p id="error-municipioNotificacion" className="field-error">{errors.municipioNotificacion}</p>
+                )}
+              </div>
+              <div>
+                <label className="field">
+                  Nombre centro poblado, vereda o corregimiento: <b>*</b>
+                </label>
+                <input
+                  type="text"
+                  value={formData.nombreCentroPobladoVeredaCorregimiento}
+                  onChange={(e) => handleChange(e, 'nombreCentroPobladoVeredaCorregimiento')}
+                  onBlur={(e) => handleBlur(e, 'nombreCentroPobladoVeredaCorregimiento')}
+                  placeholder="Ej. San Cristóbal"
+
+                  aria-invalid={!!errors.nombreCentroPobladoVeredaCorregimiento}
+                  aria-describedby={errors.nombreCentroPobladoVeredaCorregimiento ? `error-nombreCentroPobladoVeredaCorregimiento` : undefined}
+                />
+                {errors.nombreCentroPobladoVeredaCorregimiento && (
+                  <p id="error-nombreCentroPobladoVeredaCorregimiento" className="field-error">{errors.nombreCentroPobladoVeredaCorregimiento}</p>
+                )}
+              </div>
+              <div>
+                <label className="field">
+                  Departamento: <b>*</b>
+                </label>
+                <input
+                  type="text"
+                  value={formData.departamentoNotificacion}
+                  onChange={(e) => handleChange(e, 'departamentoNotificacion')}
+                  onBlur={(e) => handleBlur(e, 'departamentoNotificacion')}
+                  placeholder="Ej. Antioquia"
+
+                  aria-invalid={!!errors.departamentoNotificacion}
+                  aria-describedby={errors.departamentoNotificacion ? `error-departamentoNotificacion` : undefined}
+                />
+                {errors.departamentoNotificacion && (
+                  <p id="error-departamentoNotificacion" className="field-error">{errors.departamentoNotificacion}</p>
                 )}
               </div>
             </div>
@@ -2301,11 +2598,14 @@ const FormularioFUN: React.FC = () => {
             type="text"
             value={formData.nombreFirmante}
             onChange={(e) => handleChange(e, 'nombreFirmante')}
+            onBlur={(e) => handleBlur(e, 'nombreFirmante')}
             placeholder="Juan Pérez Gómez"
-            
+
+            aria-invalid={!!errors.nombreFirmante}
+            aria-describedby={errors.nombreFirmante ? `error-nombreFirmante` : undefined}
           />
           {errors.nombreFirmante && (
-            <p className="field-error">{errors.nombreFirmante}</p>
+            <p id="error-nombreFirmante" className="field-error">{errors.nombreFirmante}</p>
           )}
         </div>
         <p className="text-sm text-gray-500 mt-2">

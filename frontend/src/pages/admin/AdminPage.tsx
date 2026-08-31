@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, User, Mail, Shield, Trash2, Edit, Eye, MoreVertical, Filter, ChevronDown } from 'lucide-react';
+import { Search, User, Mail, Shield, Trash2, Eye, Filter } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Navbar } from '../../components/comunes/Navbar';
 import { Footer } from '../../components/comunes/Footer';
@@ -43,7 +43,7 @@ const AdminPage: React.FC = () => {
       id: u.id,
       email: u.email,
       name: u.name,
-      role: u.role,
+      role: (u.role === 'admin' ? 'admin' : 'user') as 'user' | 'admin',
       createdAt: u.createdAt,
     })));
     
@@ -79,7 +79,7 @@ const AdminPage: React.FC = () => {
 
   const toggleUserRole = (userId: string) => {
     const updatedUsers = users.map(u => 
-      u.id === userId ? { ...u, role: u.role === 'user' ? 'admin' : 'user' } : u
+      u.id === userId ? { ...u, role: u.role === 'user' ? 'admin' : 'user' as 'user' | 'admin' } : u
     );
     setUsers(updatedUsers);
     localStorage.setItem('ecoregion_users', JSON.stringify(updatedUsers));

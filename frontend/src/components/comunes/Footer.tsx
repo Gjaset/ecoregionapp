@@ -1,4 +1,4 @@
-import { Leaf, MessageCircle } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import logo from '/logo.svg';
 
 export function Footer() {
