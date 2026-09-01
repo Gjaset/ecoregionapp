@@ -382,10 +382,42 @@ button { cursor:pointer; }
 [data-theme="dark"] .brand small { color: var(--ink-soft); }
 [data-theme="dark"] .main-nav a { color: var(--ink-soft); }
 [data-theme="dark"] .main-nav a:hover { color: var(--coral); }
-[data-theme="dark"] .site-footer { border-top-color: var(--line); }
-[data-theme="dark"] .site-footer p { color: var(--ink-soft); }
-[data-theme="dark"] .site-footer span { color: var(--ink-soft); }
+[data-theme="dark"] .site-footer { border-top-color: var(--line); background: var(--forest-deep); color: var(--ink); }
+[data-theme="dark"] .site-footer p { color: var(--ink); }
+[data-theme="dark"] .site-footer span { color: var(--ink); }
+[data-theme="dark"] .site-footer strong { color: var(--ink); }
+[data-theme="dark"] .footer-brand { color: var(--ink); }
+[data-theme="dark"] .footer-brand strong { color: var(--ink); }
+[data-theme="dark"] .footer-brand .brand-logo { filter: none; }
+[data-theme="dark"] .footer-grid>span { color: var(--ink); }
 
+/* Register button in navbar */
+.nav-link-register {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--forest);
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 12px rgba(47,107,79,.3);
+}
+.nav-link-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(47,107,79,.4);
+}
+[data-theme="dark"] .nav-link-register {
+  background: var(--forest);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79,168,92,.4);
+}
+[data-theme="dark"] .nav-link-register:hover {
+  box-shadow: 0 6px 16px rgba(79,168,92,.5);
+}
 
 /* Auth pages */
 .auth-page { min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center; padding: 48px 24px; }
@@ -522,12 +554,14 @@ button { cursor:pointer; }
 [data-theme="dark"] .cta-card p { color: var(--ink-soft); }
 
 /* Footer dark mode */
-[data-theme="dark"] .site-footer { border-top-color: var(--line); }
+[data-theme="dark"] .site-footer { border-top-color: var(--line); background: var(--forest-deep); color: var(--ink); }
+[data-theme="dark"] .site-footer p { color: var(--ink); }
+[data-theme="dark"] .site-footer span { color: var(--ink); }
+[data-theme="dark"] .site-footer strong { color: var(--ink); }
 [data-theme="dark"] .footer-brand { color: var(--ink); }
 [data-theme="dark"] .footer-brand strong { color: var(--ink); }
-[data-theme="dark"] .footer-brand .brand-logo { filter: brightness(0) invert(1); }
-[data-theme="dark"] .site-footer p { color: var(--ink-soft); }
-[data-theme="dark"] .site-footer span { color: var(--ink-soft); }
+[data-theme="dark"] .footer-brand .brand-logo { filter: none; }
+[data-theme="dark"] .footer-grid>span { color: var(--ink); }
 
 
 /* WhatsApp floating button */
