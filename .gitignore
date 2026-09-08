@@ -10,10 +10,18 @@ __pycache__/
 .env.*
 !.env.example
 *.log
+*.bak
 
 # Frontend
 frontend/node_modules/
 frontend/dist/
+
+# Local tooling and dependencies
+/node_modules/
+.claude/
+HERRAMIENTAS.md
+/package.json
+/package-lock.json
 
 # Editors and OS
 .idea/
