@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.routes import auth, clientes, formulario, tramites
+from app.api.routes import auth, clientes, drafts, formulario, ia, tramites
 from app.config import settings
 
 app = FastAPI(
@@ -18,6 +18,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(formulario.router, prefix=settings.API_V1_STR)
+app.include_router(drafts.router, prefix=settings.API_V1_STR)
+app.include_router(ia.router, prefix=settings.API_V1_STR)
 app.include_router(auth.router, prefix=settings.API_V1_STR)
 app.include_router(clientes.router, prefix=settings.API_V1_STR)
 app.include_router(tramites.router, prefix=settings.API_V1_STR)

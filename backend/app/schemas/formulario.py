@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from pydantic import BaseModel, Field
+from typing import Any, Optional, List
 
 class Titular(BaseModel):
     nombre: str
@@ -30,4 +30,6 @@ class FormularioCompleto(BaseModel):
     predio: Predio
     aprovechamiento: Aprovechamiento
     especies: List[Especie]
+    autoridad_seleccionada: Optional[str] = None
+    detalles_autoridad: dict[str, Any] = Field(default_factory=dict)
     confirmar_revision: bool = False

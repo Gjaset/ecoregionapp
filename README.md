@@ -14,7 +14,7 @@ EcoRegión App reemplaza el proceso manual (WhatsApp + correos + Word) con un fo
 | ORM / DB | SQLAlchemy 2.0 + PostgreSQL 16 |
 | Generación Word | `docxtpl` (Jinja2 sobre plantilla .docx) |
 | Fuzzy matching | `rapidfuzz` (municipios y especies) |
-| Clasificación ML | Anthropic Claude API (`claude-sonnet-4-6`) |
+| Asistente IA | Nvidia OpenAI-compatible Chat Completions |
 | Frontend | React 18 + Vite + TypeScript + Tailwind CSS |
 | Contenedores | Docker + Docker Compose |
 | Migraciones | Alembic |
@@ -80,7 +80,7 @@ ecoregionapp/
 - Docker y Docker Compose
 - Node.js 18+ y npm
 - Python 3.12
-- API key de Anthropic (para las funcionalidades de ML)
+- Opcional: API key de Nvidia (el asistente usa una respuesta determinista si no está configurada)
 
 ### Paso a Paso
 
@@ -95,6 +95,11 @@ ecoregionapp/
    cp backend/.env.example backend/.env
    # Editar backend/.env con tus valores reales
    ```
+   Variables del backend:
+   - `NVIDIA_API_KEY`: clave opcional de Nvidia.
+   - `NVIDIA_API_URL`: endpoint compatible con OpenAI (por defecto `https://integrate.api.nvidia.com/v1/chat/completions`).
+   - `NVIDIA_MODEL`: modelo a utilizar (por defecto `meta/llama-3.1-8b-instruct`).
+   - `CORS_ORIGINS`, `DATABASE_URL`, `SECRET_KEY`, `DATA_PATH` y `TEMPLATES_PATH`: configuración existente de la aplicación.
 
 3. Construir y levantar los contenedores:
    ```bash
@@ -134,10 +139,24 @@ La aplicación incluye el flujo MVP de normalización, confirmación manual,
 checklist de anexos por autoridad y generación del documento Word. La plantilla
 de desarrollo disponible es `backend/templates/aprovechamiento_forestal_fixed.docx`.
 
+Los borradores se guardan con versión entera mediante `GET`/`PUT
+/api/formulario/drafts/{draft_id}`. Una escritura con una versión antigua recibe
+`409`; la interfaz muestra el conflicto y conserva los cambios locales. Cuando
+la API no está disponible, usa `localStorage` y `BroadcastChannel` como respaldo.
+El almacenamiento backend actual es un store en memoria aislado, listo para
+reemplazarse por una tabla cuando se defina el esquema persistente.
+
+El asistente está disponible desde el botón flotante. `POST /api/ia/chat` llama
+al endpoint Nvidia mediante `httpx`, con timeout y logging; sin configuración o
+ante un error responde de forma segura con una orientación determinista.
+
 ## API Endpoints
 
 - `POST /api/formulario/normalizar` - Normaliza los datos del formulario
 - `POST /api/formulario/generar-documento` - Genera el documento Word
+- `GET /api/formulario/drafts/{draft_id}` - Lee un borrador versionado
+- `PUT /api/formulario/drafts/{draft_id}` - Guarda un borrador con concurrencia optimista
+- `POST /api/ia/chat` - Asistente IA Nvidia con fallback seguro
 
 ## Licencia
 

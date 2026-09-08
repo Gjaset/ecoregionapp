@@ -12,5 +12,17 @@ export const api = {
       responseType: 'blob'
     });
     return response.data;
-  }
+  },
+  getDraft: async (draftId: string) => {
+    const response = await axios.get(`${API_BASE_URL}/formulario/drafts/${draftId}`);
+    return response.data;
+  },
+  putDraft: async (draftId: string, version: number, data: unknown) => {
+    const response = await axios.put(`${API_BASE_URL}/formulario/drafts/${draftId}`, { version, data });
+    return response.data;
+  },
+  chat: async (messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>) => {
+    const response = await axios.post(`${API_BASE_URL}/ia/chat`, { messages });
+    return response.data as { reply: string; fallback: boolean; model?: string };
+  },
 };

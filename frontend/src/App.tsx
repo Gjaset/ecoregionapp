@@ -1,5 +1,5 @@
 import { ArrowDown, Download, Loader2, Sparkles } from 'lucide-react';
-import { useState, type ChangeEvent } from 'react';
+import { useCallback, useMemo, useState, type ChangeEvent } from 'react';
 import { Footer } from './components/comunes/Footer';
 import { AIAssistant } from './components/comunes/AIAssistant';
 import { Navbar } from './components/comunes/Navbar';
@@ -10,6 +10,7 @@ import FormularioSDA from './components/formulario/FormularioSDA';
 import FormularioFUN from './components/formulario/formularioFUN';
 import { NormalizationPanel } from './components/formulario/NormalizationPanel';
 import { StepProgress } from './components/formulario/StepProgress';
+import { useDraftSync } from './hooks/useDraftSync';
 import { api } from './services/api';
 import type { FormData, NormalizedData } from './types/formulario';
 
@@ -21,6 +22,7 @@ const initialFormData: FormData = {
 };
 
 type FormSection = 'titular' | 'predio' | 'aprovechamiento';
+const supportedAuthorities: AuthorityCode[] = ['CAR', 'SDA', 'CORPOBOYACA'];
 
 function App() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
@@ -83,6 +85,18 @@ function App() {
   const addSpecies = () => setFormData((current) => ({ ...current, especies: [...current.especies, { nombre: '', cantidad: 0, diametro_cm: null }] }));
   const removeSpecies = (index: number) => setFormData((current) => ({ ...current, especies: current.especies.filter((_, itemIndex) => itemIndex !== index) }));
 
+  const draftValue = useMemo(
+    () => ({ formData, authority, authorityDetails }),
+    [formData, authority, authorityDetails],
+  );
+  const applyRemoteDraft = useCallback((draft: typeof draftValue) => {
+    if (!draft?.formData) return;
+    setFormData(draft.formData);
+    if (supportedAuthorities.includes(draft.authority)) setAuthority(draft.authority);
+    setAuthorityDetails(draft.authorityDetails || {});
+  }, []);
+  const draftSync = useDraftSync(draftValue, applyRemoteDraft);
+
   return (
     <div className="app-shell" id="inicio">
       <Navbar />
@@ -98,6 +112,10 @@ function App() {
         </section>
         <section className="workflow shell" id="datos">
           <div className="workflow-top"><div><span className="eyebrow">Solicitud nueva</span><h2>Cuéntanos sobre el aprovechamiento</h2></div><StepProgress activeStep={normalizedData ? 3 : 0} /></div>
+          <div role="status">
+            {draftSync.status === 'saving' ? 'Guardando borrador…' : draftSync.status === 'offline' ? 'Borrador guardado localmente' : `Borrador sincronizado (v${draftSync.version})`}
+            {draftSync.conflict && ` ${draftSync.conflict}`}
+          </div>
           <AuthoritySelector value={authority} onChange={(nextAuthority) => { setAuthority(nextAuthority); setAuthorityDetails({}); setNormalizedData(null); }} />
           {authority === 'SDA' && <FormularioSDA formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}
           {authority === 'CAR' && <FormularioCAR formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}

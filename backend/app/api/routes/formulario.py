@@ -17,6 +17,19 @@ async def normalizar(datos: FormularioCompleto):
     lng = coordenadas.normalizar_coordenada(datos.predio.longitud)
     tipo = tipo_aprovechamiento.clasificar_tipo(datos.aprovechamiento.tipo)
     auth = car_selector.seleccionar_autoridad(muni.get("codigo_dane", ""))
+    selected_authorities = {
+        "CAR": {"nombre": "CAR Cundinamarca", "sigla": "CAR"},
+        "SDA": {"nombre": "Secretaría Distrital de Ambiente", "sigla": "SDA"},
+        "CORPOBOYACA": {"nombre": "Corpoboyacá", "sigla": "CORPOBOYACA"},
+    }
+    if datos.autoridad_seleccionada:
+        selected = selected_authorities.get(datos.autoridad_seleccionada)
+        if selected is None:
+            raise HTTPException(
+                status_code=422,
+                detail="La autoridad seleccionada no está disponible.",
+            )
+        auth = selected
     checklist = requisitos.obtener_requisitos(auth.get("sigla", ""))
     esps = [
         {**e.model_dump(), "normalizacion": especies.normalizar_especie(e.nombre, datos.predio.municipio)}

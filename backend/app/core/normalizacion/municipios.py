@@ -33,38 +33,17 @@ def _normalize_text(text: str) -> str:
 
     return text
 
-# Load DANE municipalities data
+# Load DANE municipalities data — falla explícito si falta, sin placeholders silenciosos
 try:
     with open(DATA_PATH / "municipios_dane.json", encoding="utf-8") as f:
         MUNICIPIOS_DANE = json.load(f)
-except FileNotFoundError:
-    # Create placeholder data if file doesn't exist
-    MUNICIPIOS_DANE = [
-        {"nombre": "Bogotá D.C.", "codigo": "11001", "departamento": "Cundinamarca"},
-        {"nombre": "Duitama", "codigo": "15244", "departamento": "Boyacá"},
-        {"nombre": "Medellín", "codigo": "05001", "departamento": "Antioquia"},
-        {"nombre": "Cali", "codigo": "76001", "departamento": "Valle del Cauca"},
-        {"nombre": "Barranquilla", "codigo": "08001", "departamento": "Atlántico"},
-        {"nombre": "Cartagena", "codigo": "13001", "departamento": "Bolívar"},
-        {"nombre": "Cúcuta", "codigo": "54001", "departamento": "Norte de Santander"},
-        {"nombre": "Soledad", "codigo": "08074", "departamento": "Atlántico"},
-        {"nombre": "Ibagué", "codigo": "73001", "departamento": "Tolima"},
-        {"nombre": "Villavicencio", "codigo": "50001", "departamento": "Meta"},
-        {"nombre": "Santa Marta", "codigo": "47001", "departamento": "Magdalena"},
-        {"nombre": "Valledupar", "codigo": "20001", "departamento": "Cesar"},
-        {"nombre": "Montería", "codigo": "23001", "departamento": "Córdoba"},
-        {"nombre": "Manizales", "codigo": "17001", "departamento": "Caldas"},
-        {"nombre": "Pereira", "codigo": "66001", "departamento": "Risaralda"},
-        {"nombre": "Popayán", "codigo": "19001", "departamento": "Cauca"},
-        {"nombre": "Neiva", "codigo": "41001", "departamento": "Huila"},
-        {"nombre": "Santafe de Antioquia", "codigo": "05387", "departamento": "Antioquia"},
-        {"nombre": "Girardot", "codigo": "25239", "departamento": "Cundinamarca"},
-        {"nombre": "Facatativá", "codigo": "25269", "departamento": "Cundinamarca"}
-    ]
-    # Save placeholder data
-    DATA_PATH.mkdir(exist_ok=True)
-    with open(DATA_PATH / "municipios_dane.json", "w", encoding="utf-8") as f:
-        json.dump(MUNICIPIOS_DANE, f, indent=2, ensure_ascii=False)
+except FileNotFoundError as exc:
+    raise RuntimeError(
+        f"No se encontró {DATA_PATH / 'municipios_dane.json'}: "
+        "restaura el dataset DANE oficial, no se usa fallback."
+    ) from exc
+if not MUNICIPIOS_DANE:
+    raise RuntimeError("municipios_dane.json está vacío: restaura el dataset DANE oficial.")
 
 # Create normalized versions for matching
 NOMBRES_NORMALIZADOS = [_normalize_text(m["nombre"]) for m in MUNICIPIOS_DANE]
@@ -72,14 +51,35 @@ MUNI_MAP = {m["nombre"]: m for m in MUNICIPIOS_DANE}
 UMBRAL = 85
 
 def normalizar_municipio(entrada: str) -> dict:
+    if not entrada or not entrada.strip():
+        return {
+            "nombre_oficial": None,
+            "codigo_dane": "",
+            "departamento": None,
+            "confianza": 0.0,
+            "requiere_confirmacion": True,
+            "entrada_original": entrada or "",
+            "error": "Municipio vacío.",
+        }
     entrada_limpia = entrada.strip()
     entrada_normalizada = _normalize_text(entrada_limpia)
 
-    matched_normalized, score, indice = process.extractOne(
+    match = process.extractOne(
         entrada_normalizada,
         NOMBRES_NORMALIZADOS,
         scorer=fuzz.WRatio
     )
+    if match is None:
+        return {
+            "nombre_oficial": None,
+            "codigo_dane": "",
+            "departamento": None,
+            "confianza": 0.0,
+            "requiere_confirmacion": True,
+            "entrada_original": entrada_limpia,
+            "error": "Sin coincidencias en dataset DANE.",
+        }
+    _, score, indice = match
 
     muni = MUNICIPIOS_DANE[indice]
     nombre_original_entrada = entrada_limpia
