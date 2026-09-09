@@ -65,7 +65,7 @@ const FORMATOS: FormatoInfo[] = [
 ];
 
 export const FormatosPage: React.FC = () => {
-  const { user, isAuthenticated, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const [activeFormato, setActiveFormato] = useState<FormatoType | null>(null);
   const [view, setView] = useState<'list' | 'detail'>('list');
 

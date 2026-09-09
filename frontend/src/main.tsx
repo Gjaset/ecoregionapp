@@ -10,6 +10,7 @@ import LoginPage from './pages/auth/LoginPage'
 import RegisterPage from './pages/auth/RegisterPage'
 import AdminPage from './pages/admin/AdminPage'
 import FormatosPage from './pages/FormatosPage'
+import MisSolicitudesPage from './pages/MisSolicitudesPage'
 import FormatF1Page from './pages/formatos/FormatF1Page'
 import FormatF2Page from './pages/formatos/FormatF2Page'
 import FormatF3Page from './pages/formatos/FormatF3Page'
@@ -39,6 +40,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <Route path="/formatos/f3" element={<FormatF3Page />} />
           <Route path="/formatos/fg1" element={<FormatFG1Page />} />
           <Route path="/formatos/fg2" element={<FormatFG2Page />} />
+          <Route path="/mis-solicitudes" element={<MisSolicitudesPage />} />
           <Route path="/admin" element={
             <AdminRoute><AdminPage /></AdminRoute>
           } />

@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, ChangeEvent, FormEvent, FocusEvent } from 'react';
-import axios from 'axios';
+import { api } from '../../services/api';
 import './styles/formularioFUN.css';
 
 interface FormularioFUNData {
@@ -219,6 +219,7 @@ const FormularioFUN: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   // Auto-save form data to localStorage
   useEffect(() => {
@@ -532,41 +533,38 @@ const FormularioFUN: React.FC = () => {
       return;
     }
 
+    setDownloading(true);
     try {
-      const response = await axios.post('/api/formulario-general', formData, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (response.status === 200 || response.status === 201) {
-        setSubmitSuccess(true);
-      } else {
-        throw new Error(`Error inesperado: ${response.status}`);
-      }
-    } catch (err: any) {
+      const blob = await api.exportarFunPdf(formData);
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'formato_unico_nacional.pdf';
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+      setSubmitSuccess(true);
+    } catch (err: unknown) {
       setSubmitSuccess(false);
-      if (err.response) {
+      if (err && typeof err === 'object' && 'response' in err) {
+        const response = (err as { response?: { status: number; statusText: string } }).response;
         setSubmitError(
-          err.response.data?.message ||
-            err.response.data?.error ||
-            `Error ${err.response.status}: ${err.response.statusText}`
+          response?.status === 401
+            ? 'Inicia sesión para exportar el PDF. Tus datos se conservan en el borrador.'
+            : response
+              ? `Error ${response.status}: ${response.statusText}`
+              : 'Error desconocido'
         );
-        if (err.response.data?.errors) {
-          const backendErrors = err.response.data.errors;
-          setErrors((prev) => {
-            const newErrors = { ...prev };
-            Object.keys(backendErrors).forEach((key) => {
-              if (key in newErrors) {
-                newErrors[key as keyof FormularioFUNData] = backendErrors[key];
-              }
-            });
-            return newErrors;
-          });
-        }
-      } else if (err.request) {
+      } else if (err && typeof err === 'object' && 'request' in err) {
         setSubmitError('Error de conexión. Verifique su internet y que el backend esté disponible.');
-      } else {
+      } else if (err instanceof Error) {
         setSubmitError(err.message || 'Error desconocido');
+      } else {
+        setSubmitError('Error desconocido');
       }
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -2616,6 +2614,16 @@ const FormularioFUN: React.FC = () => {
       {/* Botones de autoridades */}
       <div className="form-actions">
         <button
+          type="submit"
+          className="btn-primary"
+          style={{ flex: 1, maxWidth: '340px' }}
+          disabled={downloading}
+        >
+          {downloading ? 'Generando PDF…' : 'Descargar PDF diligenciado'}
+        </button>
+      </div>
+      <div className="form-actions">
+        <button
           type="button"
           className="btn-primary"
           style={{ flex: 1, maxWidth: '280px' }}
@@ -2641,7 +2649,7 @@ const FormularioFUN: React.FC = () => {
       {/* Mensajes de resultado */}
       {submitSuccess && (
         <div className="alert alert-success">
-          ¡Solicitud enviada correctamente!
+          PDF generado correctamente con la plantilla oficial.
         </div>
       )}
       {submitError && (

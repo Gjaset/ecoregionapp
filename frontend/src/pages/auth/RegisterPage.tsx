@@ -25,8 +25,8 @@ const RegisterPage: React.FC = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres');
       return;
     }
 
@@ -100,7 +100,7 @@ const RegisterPage: React.FC = () => {
                     placeholder="••••••••"
                     required
                     disabled={isLoading}
-                    minLength={6}
+                    minLength={8}
                   />
                   <button
                     type="button"
@@ -125,6 +125,7 @@ const RegisterPage: React.FC = () => {
                     placeholder="••••••••"
                     required
                     disabled={isLoading}
+                    minLength={8}
                   />
                 </div>
               </div>

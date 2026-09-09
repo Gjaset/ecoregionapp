@@ -1,12 +1,19 @@
 import io
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
+from sqlalchemy.orm import Session
 
 from app.core.normalizacion import municipios, especies, coordenadas, tipo_aprovechamiento
 from app.core.reglas import car_selector
 from app.core.reglas import requisitos
 from app.core.generacion import documento_word
+from app.core.generacion.fun_pdf import generar_fun_pdf
+from app.core.seguridad import get_current_user
+from app.core.solicitudes import guardar_solicitud
+from app.database import get_db
+from app.models.usuario import Usuario
 from app.schemas.formulario import FormularioCompleto
+from app.schemas.fun import FormularioFUN
 
 router = APIRouter(prefix="/formulario", tags=["Formulario"])
 
@@ -60,7 +67,11 @@ async def normalizar(datos: FormularioCompleto):
             "revision_confirmada": datos.confirmar_revision}
 
 @router.post("/generar-documento")
-async def generar_documento(datos: FormularioCompleto):
+async def generar_documento(
+    datos: FormularioCompleto,
+    usuario: Usuario = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     norm = await normalizar(datos)
     if not norm["listo_para_generar"]:
         raise HTTPException(422, "Hay campos pendientes de confirmación.")
@@ -70,8 +81,53 @@ async def generar_documento(datos: FormularioCompleto):
         "predio": datos.predio.model_dump(),
         "aprovechamiento": datos.aprovechamiento.model_dump(),
     })
+    guardar_solicitud(
+        db,
+        usuario_id=usuario.id,
+        tipo="formulario",
+        contenido=doc_bytes,
+        nombre_base=datos.titular.nombre or datos.predio.nombre or "aprovechamiento",
+        extension=".docx",
+        resumen={
+            "titular": datos.titular.nombre,
+            "predio": datos.predio.nombre,
+            "municipio": datos.predio.municipio,
+            "autoridad": norm.get("autoridad", {}).get("sigla"),
+        },
+    )
     return StreamingResponse(
         io.BytesIO(doc_bytes),
         media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         headers={"Content-Disposition": "attachment; filename=aprovechamiento_forestal.docx"},
+    )
+
+@router.post("/fun/exportar-pdf")
+async def exportar_fun_pdf(
+    datos: FormularioFUN,
+    usuario: Usuario = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Rellena la plantilla oficial FUN (PDF idéntico) y la devuelve lista."""
+    try:
+        pdf_bytes = generar_fun_pdf(datos.model_dump())
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+    guardar_solicitud(
+        db,
+        usuario_id=usuario.id,
+        tipo="fun",
+        contenido=pdf_bytes,
+        nombre_base=datos.nombreRazonSocial or datos.nombrePredio or "formato_unico",
+        extension=".pdf",
+        resumen={
+            "nombre": datos.nombreRazonSocial,
+            "predio": datos.nombrePredio,
+            "municipio": datos.municipio,
+            "tipo_solicitud": datos.tipoSolicitud,
+        },
+    )
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=formato_unico_nacional.pdf"},
     )

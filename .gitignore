@@ -31,4 +31,5 @@ contexto
 formatos
 
 backend/.env
-backend/alembic
+backend/generated/
+generated/

@@ -153,6 +153,7 @@ export function Navbar() {
           {isAuthenticated ? (
             <>
               {isAdmin && <Link to="/admin" onClick={closeAll}><LayoutDashboard size={18} /> Panel Admin</Link>}
+              <Link to="/mis-solicitudes" onClick={closeAll}><FileText size={18} /> Mis solicitudes</Link>
               <div className="user-menu">
                 <Link to="/formulario-fun" onClick={closeAll} className="user-link">
                   <User size={18} /> {user?.name}

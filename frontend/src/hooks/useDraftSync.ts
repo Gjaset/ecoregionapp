@@ -110,7 +110,6 @@ export function useDraftSync<T>(
   }, [value, state.version]);
 
   useEffect(() => {
-    const localKey = `ecoregion:draft:${draftId.current}`;
     if (typeof BroadcastChannel !== 'undefined') {
       const channel = new BroadcastChannel(`ecoregion:draft:${draftId.current}`);
       channelRef.current = channel;

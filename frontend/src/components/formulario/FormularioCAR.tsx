@@ -1,16 +1,6 @@
-import React from 'react';
+import type { AuthorityFormProps } from './AuthorityFormProps';
 
-interface FormularioCARProps {
-  formData?: any;
-  details?: any;
-  onSectionChange?: any;
-  onSpeciesChange?: any;
-  onAddSpecies?: any;
-  onRemoveSpecies?: any;
-  onDetailChange?: any;
-}
-
-const FormularioCAR: React.FC<FormularioCARProps> = () => {
+const FormularioCAR: React.FC<AuthorityFormProps> = () => {
   return (
     <div className="formulario-car">
       <header className="form-header">

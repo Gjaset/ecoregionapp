@@ -55,3 +55,9 @@ def require_staff(user: Usuario = Depends(get_current_user)) -> Usuario:
     if user.rol not in {"admin", "consultor"}:
         raise HTTPException(status_code=403, detail="Se requiere un usuario interno.")
     return user
+
+
+def require_admin(user: Usuario = Depends(get_current_user)) -> Usuario:
+    if user.rol != "admin":
+        raise HTTPException(status_code=403, detail="Se requiere rol de administrador.")
+    return user

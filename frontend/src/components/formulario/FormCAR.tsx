@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { Upload, FileText, AlertCircle, CheckCircle, X, Download } from 'lucide-react';
 import { Navbar } from '../comunes/Navbar';
 import { Footer } from '../comunes/Footer';
-import { useAuth } from '../../context/AuthContext';
 import '../formatos/formcar.css';
 
 interface DocumentoRequerido {
@@ -54,7 +53,6 @@ const documentosIniciales: DocumentoRequerido[] = [
 ];
 
 export const FormCAR: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
   const [documentos, setDocumentos] = useState<DocumentoRequerido[]>(documentosIniciales);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);

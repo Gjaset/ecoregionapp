@@ -28,6 +28,7 @@ class Settings:
     # Paths
     DATA_PATH: str = os.getenv("DATA_PATH", "./data")
     TEMPLATES_PATH: str = os.getenv("TEMPLATES_PATH", "./templates")
+    GENERATED_PATH: str = os.getenv("GENERATED_PATH", "./generated")
     CORS_ORIGINS: list[str] = [
         origin.strip()
         for origin in os.getenv(

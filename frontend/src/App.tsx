@@ -1,101 +1,34 @@
 import { ArrowDown, Download, Loader2, Sparkles } from 'lucide-react';
-import { useCallback, useMemo, useState, type ChangeEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { Footer } from './components/comunes/Footer';
 import { AIAssistant } from './components/comunes/AIAssistant';
 import { Navbar } from './components/comunes/Navbar';
-import { AuthoritySelector, type AuthorityCode } from './components/formulario/AuthoritySelector';
+import { AuthoritySelector } from './components/formulario/AuthoritySelector';
 import FormularioCAR from './components/formulario/FormularioCAR';
 import FormularioCOR from './components/formulario/FormularioCOR';
 import FormularioSDA from './components/formulario/FormularioSDA';
-import FormularioFUN from './components/formulario/formularioFUN';
 import { NormalizationPanel } from './components/formulario/NormalizationPanel';
 import { StepProgress } from './components/formulario/StepProgress';
-import { useDraftSync } from './hooks/useDraftSync';
-import { api } from './services/api';
-import type { FormData, NormalizedData } from './types/formulario';
-
-const initialFormData: FormData = {
-  titular: { nombre: '', nit: '', representante_legal: '', direccion: '' },
-  predio: { nombre: '', municipio: '', vereda: '', latitud: '', longitud: '' },
-  aprovechamiento: { tipo: '', justificacion: '', volumen_total: 0, unidad: 'm3' },
-  especies: [{ nombre: '', cantidad: 0, diametro_cm: null }],
-};
-
-type FormSection = 'titular' | 'predio' | 'aprovechamiento';
-const supportedAuthorities: AuthorityCode[] = ['CAR', 'SDA', 'CORPOBOYACA'];
+import { useTramiteWizard } from './hooks/useTramiteWizard';
 
 function App() {
-  const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [normalizedData, setNormalizedData] = useState<NormalizedData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [authority, setAuthority] = useState<AuthorityCode>('CAR');
-  const [authorityDetails, setAuthorityDetails] = useState<Record<string, string | boolean>>({});
-
-  const updateSection = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>, section: FormSection) => {
-    const { name, value } = event.target;
-    const nextValue = section === 'aprovechamiento' && name === 'volumen_total' ? Number(value) : value;
-    setFormData((current) => ({ ...current, [section]: { ...current[section], [name]: nextValue } }));
-    setNormalizedData(null);
-  };
-
-  const updateSpecies = (index: number, event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    const nextValue = name === 'nombre' ? value : value === '' ? null : Number(value);
-    setFormData((current) => ({ ...current, especies: current.especies.map((item, itemIndex) => itemIndex === index ? { ...item, [name]: nextValue } : item) }));
-    setNormalizedData(null);
-  };
-
-  const updateAuthorityDetail = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = event.target;
-    setAuthorityDetails((current) => ({ ...current, [name]: type === 'checkbox' ? (event.target as HTMLInputElement).checked : value }));
-    setNormalizedData(null);
-  };
-
-  const normalize = async (confirmar_revision = false) => {
-    setLoading(true);
-    setError('');
-    try {
-      setNormalizedData(await api.normalizar({ ...formData, autoridad_seleccionada: authority, detalles_autoridad: authorityDetails, confirmar_revision }));
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'No pudimos analizar estos datos. Intenta de nuevo.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const downloadDocument = async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const blob = await api.generarDocumento({ ...formData, autoridad_seleccionada: authority, detalles_autoridad: authorityDetails, confirmar_revision: true });
-      const url = window.URL.createObjectURL(blob);
-      const anchor = document.createElement('a');
-      anchor.href = url;
-      anchor.download = 'aprovechamiento_forestal.docx';
-      anchor.click();
-      window.URL.revokeObjectURL(url);
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'No pudimos generar el documento.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const addSpecies = () => setFormData((current) => ({ ...current, especies: [...current.especies, { nombre: '', cantidad: 0, diametro_cm: null }] }));
-  const removeSpecies = (index: number) => setFormData((current) => ({ ...current, especies: current.especies.filter((_, itemIndex) => itemIndex !== index) }));
-
-  const draftValue = useMemo(
-    () => ({ formData, authority, authorityDetails }),
-    [formData, authority, authorityDetails],
-  );
-  const applyRemoteDraft = useCallback((draft: typeof draftValue) => {
-    if (!draft?.formData) return;
-    setFormData(draft.formData);
-    if (supportedAuthorities.includes(draft.authority)) setAuthority(draft.authority);
-    setAuthorityDetails(draft.authorityDetails || {});
-  }, []);
-  const draftSync = useDraftSync(draftValue, applyRemoteDraft);
+  const {
+    formData,
+    normalizedData,
+    loading,
+    error,
+    authority,
+    authorityDetails,
+    draftSync,
+    updateSection,
+    updateSpecies,
+    updateAuthorityDetail,
+    normalize,
+    downloadDocument,
+    addSpecies,
+    removeSpecies,
+    changeAuthority,
+  } = useTramiteWizard();
 
   return (
     <div className="app-shell" id="inicio">
@@ -116,7 +49,7 @@ function App() {
             {draftSync.status === 'saving' ? 'Guardando borrador…' : draftSync.status === 'offline' ? 'Borrador guardado localmente' : `Borrador sincronizado (v${draftSync.version})`}
             {draftSync.conflict && ` ${draftSync.conflict}`}
           </div>
-          <AuthoritySelector value={authority} onChange={(nextAuthority) => { setAuthority(nextAuthority); setAuthorityDetails({}); setNormalizedData(null); }} />
+          <AuthoritySelector value={authority} onChange={changeAuthority} />
           {authority === 'SDA' && <FormularioSDA formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}
           {authority === 'CAR' && <FormularioCAR formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}
           {authority === 'CORPOBOYACA' && <FormularioCOR formData={formData} details={authorityDetails} onSectionChange={updateSection} onSpeciesChange={updateSpecies} onAddSpecies={addSpecies} onRemoveSpecies={removeSpecies} onDetailChange={updateAuthorityDetail} />}
@@ -126,8 +59,9 @@ function App() {
         {error && <div className="shell error-message" role="alert">{error}</div>}
         <section className="shell" id="formulario-general">
           <div className="shell-inner">
-            <h2 className="section-title">Formulario General</h2>
-            <FormularioFUN />
+            <h2 className="section-title">¿Necesitas el Formulario Único Nacional completo?</h2>
+            <p>El FUN detallado vive en su propia página para no duplicar lógica.</p>
+            <Link className="primary-button" to="/formulario-fun">Ir al Formulario General</Link>
           </div>
         </section>
       </main>

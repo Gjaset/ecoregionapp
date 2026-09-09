@@ -1,16 +1,6 @@
-import React from 'react';
+import type { AuthorityFormProps } from './AuthorityFormProps';
 
-interface FormularioSDAProps {
-  formData?: any;
-  details?: any;
-  onSectionChange?: any;
-  onSpeciesChange?: any;
-  onAddSpecies?: any;
-  onRemoveSpecies?: any;
-  onDetailChange?: any;
-}
-
-const FormularioSDA: React.FC<FormularioSDAProps> = () => {
+const FormularioSDA: React.FC<AuthorityFormProps> = () => {
   return (
     <div className="formulario-sda">
       <header className="form-header">

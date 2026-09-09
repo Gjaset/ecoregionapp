@@ -1,10 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { api, TOKEN_KEY, type BackendUser } from '../services/api';
+
+export type UserRole = 'admin' | 'consultor' | 'cliente';
 
 interface User {
-  id: string;
+  id: number;
   email: string;
   name: string;
-  role: 'user' | 'admin';
+  role: UserRole;
   createdAt: string;
 }
 
@@ -19,70 +22,104 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const USER_KEY = 'ecoregion_user';
+
+function toUser(data: BackendUser): User {
+  return {
+    id: data.id,
+    email: data.email,
+    name: data.nombre,
+    role: (['admin', 'consultor', 'cliente'] as UserRole[]).includes(data.rol as UserRole)
+      ? (data.rol as UserRole)
+      : 'cliente',
+    createdAt: data.creado_en,
+  };
+}
+
+function authError(err: unknown, fallback: string): Error {
+  if (err && typeof err === 'object' && 'response' in err) {
+    const response = (err as { response?: { status?: number; data?: { detail?: unknown } } }).response;
+    const detail = response?.data?.detail;
+    const message = typeof detail === 'string'
+      ? detail
+      : Array.isArray(detail)
+        ? detail.map((d) => (typeof d === 'object' && d && 'msg' in d ? String((d as { msg: unknown }).msg) : JSON.stringify(d))).join('. ')
+        : fallback;
+    if (response?.status === 401) return new Error('Email o contraseña incorrectos.');
+    if (response?.status === 409) return new Error('Ya existe un usuario con ese email.');
+    return new Error(message || fallback);
+  }
+  return new Error('Error de conexión. Verifica que el backend esté disponible.');
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem('ecoregion_user');
-    if (stored) {
+    const stored = localStorage.getItem(USER_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (stored && token) {
       try {
         setUser(JSON.parse(stored));
       } catch {
-        localStorage.removeItem('ecoregion_user');
+        localStorage.removeItem(USER_KEY);
       }
+      // Revalida el token contra el backend; si expiró, cierra sesión.
+      api.me()
+        .then((data) => {
+          const fresh = toUser(data);
+          setUser(fresh);
+          localStorage.setItem(USER_KEY, JSON.stringify(fresh));
+        })
+        .catch(() => {
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USER_KEY);
+          setUser(null);
+        })
+        .finally(() => setIsLoading(false));
+    } else {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const users = JSON.parse(localStorage.getItem('ecoregion_users') || '[]');
-    const found = users.find((u: any) => u.email === email && u.password === password);
-    
-    if (!found) {
+    try {
+      const { access_token } = await api.login(email.trim(), password);
+      localStorage.setItem(TOKEN_KEY, access_token);
+      const data = await api.me();
+      const mapped = toUser(data);
+      setUser(mapped);
+      localStorage.setItem(USER_KEY, JSON.stringify(mapped));
+    } catch (err) {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      throw authError(err, 'Error al iniciar sesión');
+    } finally {
       setIsLoading(false);
-      throw new Error('Credenciales inválidas');
     }
-    
-    const { password: _, ...userData } = found;
-    setUser(userData);
-    localStorage.setItem('ecoregion_user', JSON.stringify(userData));
-    setIsLoading(false);
   };
 
   const register = async (email: string, password: string, name: string) => {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const users = JSON.parse(localStorage.getItem('ecoregion_users') || '[]');
-    
-    if (users.find((u: any) => u.email === email)) {
+    try {
+      await api.register({ email: email.trim(), nombre: name.trim(), password });
+      await login(email, password);
+    } catch (err) {
+      if (err instanceof Error) throw err;
+      throw authError(err, 'Error al crear la cuenta');
+    } finally {
       setIsLoading(false);
-      throw new Error('El email ya está registrado');
     }
-    
-    const newUser: User = {
-      id: crypto.randomUUID(),
-      email,
-      name,
-      role: users.length === 0 ? 'admin' : 'user',
-      createdAt: new Date().toISOString(),
-    };
-    
-    users.push({ ...newUser, password });
-    localStorage.setItem('ecoregion_users', JSON.stringify(users));
-    setUser(newUser);
-    localStorage.setItem('ecoregion_user', JSON.stringify(newUser));
-    setIsLoading(false);
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('ecoregion_user');
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
   };
 
   return (

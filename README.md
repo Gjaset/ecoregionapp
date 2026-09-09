@@ -12,13 +12,56 @@ EcoRegión App reemplaza el proceso manual (WhatsApp + correos + Word) con un fo
 |------|------------|
 | Backend API | Python 3.12 + FastAPI + Uvicorn |
 | ORM / DB | SQLAlchemy 2.0 + PostgreSQL 16 |
+| Migraciones | Alembic (se aplican solas al arrancar el backend) |
+| Auth | JWT + Argon2 (`pwdlib`) |
 | Generación Word | `docxtpl` (Jinja2 sobre plantilla .docx) |
+| Relleno PDF | `pypdf` + `reportlab` sobre la plantilla oficial FUN |
 | Fuzzy matching | `rapidfuzz` (municipios y especies) |
 | Asistente IA | Nvidia OpenAI-compatible Chat Completions |
-| Frontend | React 18 + Vite + TypeScript + Tailwind CSS |
+| Frontend | React 18 + Vite + TypeScript + Tailwind CSS (Node 20+) |
 | Contenedores | Docker + Docker Compose |
-| Migraciones | Alembic |
 | Testing | Pytest + pytest-asyncio |
+
+## Inicio rápido (recomendado: Docker)
+
+### Prerrequisitos
+
+- Docker y Docker Compose
+- Git
+- Opcional: API key de Nvidia (el asistente usa una respuesta determinista si no está configurada)
+
+### Paso a Paso
+
+1. Clonar el repositorio:
+   ```bash
+   git clone <repository-url>
+   cd ecoregionapp
+   ```
+
+2. Configurar variables de entorno (solo la primera vez):
+   ```bash
+   cp backend/.env.example backend/.env
+   cp frontend/.env.example frontend/.env   # opcional: ya trae valores por defecto
+   # Editar backend/.env con tus valores reales (SECRET_KEY, NVIDIA_API_KEY, ...)
+   ```
+
+3. Construir y levantar todo (las migraciones de BD corren automáticamente):
+   ```bash
+   docker compose up --build
+   ```
+
+4. Crear el usuario administrador (solo la primera vez):
+   ```bash
+   docker compose exec backend python scripts/crear_admin.py --email admin@admin.com --password <clave-de-8+-caracteres>
+   ```
+
+5. Abrir:
+   - Frontend: http://localhost:5173 (regístrate o inicia sesión)
+   - Backend: http://localhost:8000 (docs interactivas en http://localhost:8000/docs)
+
+> Sin `backend/.env` el backend usa valores de desarrollo. Sin `NVIDIA_API_KEY`
+> el asistente IA responde con orientación determinista. Sin admin creado,
+> regístrate por la UI (rol `cliente`) y promueve con el script de arriba.
 
 ## Estructura del Proyecto
 
@@ -30,59 +73,41 @@ ecoregionapp/
 │   │   ├── config.py
 │   │   ├── database.py
 │   │   ├── core/
-│   │   │   ├── normalizacion/
-│   │   │   │   ├── municipios.py
-│   │   │   │   ├── especies.py
-│   │   │   │   ├── coordenadas.py
-│   │   │   │   └── tipo_aprovechamiento.py
-│   │   │   ├── reglas/
-│   │   │   │   ├── car_selector.py
-│   │   │   │   └── requisitos.py
-│   │   │   └── generacion/
-│   │   │       ├── documento_word.py
-│   │   │       └── checklist_anexos.py
-│   │   ├── api/
-│   │   │   └── routes/
-│   │   │       └── formulario.py
-│   │   ├── models/
-│   │   │   └── tramite.py
-│   │   └── schemas/
-│   │       └── formulario.py
-│   ├── data/
-│   │   ├── municipios_dane.json
-│   │   ├── especies_ideam.json
-│   │   ├── car_por_municipio.json
-│   │   └── requisitos_por_autoridad.json
-│   ├── templates/
-│   │   └── aprovechamiento_forestal.docx
-│   ├── tests/
-│   ├── alembic/
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .env.example
+│   │   │   ├── normalizacion/      # municipios, especies, coordenadas, tipo
+│   │   │   ├── reglas/             # car_selector, requisitos
+│   │   │   ├── generacion/         # documento_word (docx), fun_pdf (PDF oficial)
+│   │   │   ├── drafts.py           # fallback en memoria para borradores
+│   │   │   ├── solicitudes.py      # persistencia de copias exportadas
+│   │   │   └── seguridad.py        # JWT + Argon2 + guards de rol
+│   │   ├── api/routes/             # auth, formulario, drafts, ia, clientes, tramites, solicitudes
+│   │   ├── models/                 # usuario, tramite, draft, solicitud
+│   │   └── schemas/                # auth, formulario, fun, drafts, ia, tramites, solicitudes
+│   ├── data/                       # datasets DANE/IDEAM (solo lectura)
+│   ├── templates/                  # fun_template.pdf + plantilla docx
+│   ├── generated/                  # copias exportadas (ignorado por git, se crea solo)
+│   ├── scripts/crear_admin.py      # crea/actualiza el administrador
+│   ├── tests/  +  alembic/  +  requirements.txt  +  Dockerfile  +  entrypoint.sh  +  .env.example
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── hooks/
-│   ├── package.json
-│   └── vite.config.ts
+│   │   ├── components/             # comunes (Navbar, Footer, AIAssistant) + formulario + formatos
+│   │   ├── pages/                  # Main, FormularioFUN, FormCAR, Formatos, auth, admin, MisSolicitudes
+│   │   ├── context/AuthContext.tsx # sesión JWT contra el backend
+│   │   ├── hooks/                  # useDraftSync, useTramiteWizard
+│   │   └── services/api.ts         # cliente HTTP con interceptor Bearer
+│   ├── package.json  +  vite.config.ts  +  Dockerfile  +  entrypoint.sh  +  .env.example
 ├── docker-compose.yml
-├── .env.example
 └── README.md
 ```
 
-## Instrucciones de Instalación
+## Variables de entorno (referencia)
 
-### Prerrequisitos
+### Prerrequisitos por modo
 
-- Docker y Docker Compose
-- Node.js 18+ y npm
-- Python 3.12
-- Opcional: API key de Nvidia (el asistente usa una respuesta determinista si no está configurada)
+- **Docker (recomendado):** solo Docker + Docker Compose + Git.
+- **Desarrollo local:** Python 3.12 (+ `uv`), Node.js 20+ y npm, PostgreSQL accesible.
+- Opcional: API key de Nvidia (sin ella, el asistente responde de forma determinista).
 
-### Paso a Paso
+### Paso a Paso (detalle, ya cubierto en el inicio rápido)
 
 1. Clonar el repositorio:
    ```bash
@@ -99,7 +124,8 @@ ecoregionapp/
    - `NVIDIA_API_KEY`: clave opcional de Nvidia.
    - `NVIDIA_API_URL`: endpoint compatible con OpenAI (por defecto `https://integrate.api.nvidia.com/v1/chat/completions`).
    - `NVIDIA_MODEL`: modelo a utilizar (por defecto `meta/llama-3.1-8b-instruct`).
-   - `CORS_ORIGINS`, `DATABASE_URL`, `SECRET_KEY`, `DATA_PATH` y `TEMPLATES_PATH`: configuración existente de la aplicación.
+   - `CORS_ORIGINS`, `DATABASE_URL`, `SECRET_KEY`, `DATA_PATH`, `TEMPLATES_PATH` y `GENERATED_PATH`: configuración de la aplicación.
+   - En producción (`APP_ENV=production`) el backend **exige** un `SECRET_KEY` real y falla al arrancar si es el valor de ejemplo.
 
 3. Construir y levantar los contenedores:
    ```bash
@@ -109,42 +135,77 @@ ecoregionapp/
 4. El backend estará disponible en: http://localhost:8000
 5. El frontend estará disponible en: http://localhost:5173
 
-## Desarrollo
+> Si vienes de una versión anterior: `docker compose build backend` para
+> reconstruir la imagen con las dependencias actuales.
+
+## Desarrollo local (sin Docker)
 
 ### Backend
 
-Para ejecutar el backend en modo desarrollo:
+Requiere Python 3.12 y un PostgreSQL accesible. La forma más simple es usar
+solo la BD de Docker y correr el backend en local:
+
+```bash
+docker compose up -d db
+cd backend
+cp .env.example .env   # y ajusta DATABASE_URL:
+# DATABASE_URL=postgresql://admin:admin@localhost:5432/ecoregion_db
+uv sync
+uv run alembic upgrade head
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Crear el admin (con el backend corriendo o no, pero con BD arriba):
+
 ```bash
 cd backend
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uv run python scripts/crear_admin.py --email admin@admin.com --password <clave-de-8+-caracteres>
 ```
 
 ### Frontend
 
-Para ejecutar el frontend en modo desarrollo:
+Requiere Node.js 20+ y npm:
+
 ```bash
 cd frontend
-npm install
+cp .env.example .env   # opcional
+npm install --legacy-peer-deps
 npm run dev
 ```
 
 ## Testing
 
-Ejecutar los tests:
+Ejecutar los tests (desde la raíz, sin necesidad de Docker ni Postgres: usan SQLite en memoria):
+
 ```bash
 uv run pytest -q
+```
+
+Chequeo de tipos del frontend:
+
+```bash
+cd frontend && npx tsc --noEmit
 ```
 
 La aplicación incluye el flujo MVP de normalización, confirmación manual,
 checklist de anexos por autoridad y generación del documento Word. La plantilla
 de desarrollo disponible es `backend/templates/aprovechamiento_forestal_fixed.docx`.
 
+El Formulario Único Nacional se exporta en PDF sobre la plantilla oficial
+(`backend/templates/fun_template.pdf`) mediante `POST /api/formulario/fun/exportar-pdf`
+(requiere login). Cada exportación guarda una copia asociada al usuario
+(`backend/generated/`, tabla `solicitudes`).
+
 Los borradores se guardan con versión entera mediante `GET`/`PUT
 /api/formulario/drafts/{draft_id}`. Una escritura con una versión antigua recibe
 `409`; la interfaz muestra el conflicto y conserva los cambios locales. Cuando
 la API no está disponible, usa `localStorage` y `BroadcastChannel` como respaldo.
-El almacenamiento backend actual es un store en memoria aislado, listo para
-reemplazarse por una tabla cuando se defina el esquema persistente.
+El almacenamiento primario es la tabla `drafts` en Postgres; el store en memoria
+solo actúa como fallback si la BD no está disponible.
+
+Autenticación JWT con roles `admin` / `consultor` / `cliente`. La descarga de
+documentos requiere sesión; cada usuario ve su historial en “Mis solicitudes” y
+el admin ve todo, filtra por usuario y descarga ZIP (`{Usuario}_{AAAAMMDD_HHMM}.zip`).
 
 El asistente está disponible desde el botón flotante. `POST /api/ia/chat` llama
 al endpoint Nvidia mediante `httpx`, con timeout y logging; sin configuración o
@@ -153,10 +214,22 @@ ante un error responde de forma segura con una orientación determinista.
 ## API Endpoints
 
 - `POST /api/formulario/normalizar` - Normaliza los datos del formulario
-- `POST /api/formulario/generar-documento` - Genera el documento Word
+- `POST /api/formulario/generar-documento` - Genera el documento Word (requiere login, guarda copia)
+- `POST /api/formulario/fun/exportar-pdf` - Rellena el FUN oficial en PDF (requiere login, guarda copia)
 - `GET /api/formulario/drafts/{draft_id}` - Lee un borrador versionado
 - `PUT /api/formulario/drafts/{draft_id}` - Guarda un borrador con concurrencia optimista
 - `POST /api/ia/chat` - Asistente IA Nvidia con fallback seguro
+- `POST /api/auth/register` - Registro (rol `cliente` por defecto)
+- `POST /api/auth/login` - Login OAuth2, devuelve JWT
+- `GET /api/auth/me` - Perfil del usuario autenticado
+- `GET /api/auth/usuarios` - Lista usuarios (solo admin)
+- `PATCH /api/auth/usuarios/{id}` - Cambia rol/activo (solo admin)
+- `DELETE /api/auth/usuarios/{id}` - Elimina usuario (solo admin)
+- `GET /api/solicitudes/mias` - Historial propio ordenado con fecha y hora
+- `GET /api/solicitudes` - Todas las solicitudes, filtro `?usuario_id=` (solo admin)
+- `GET /api/solicitudes/{id}/descargar` - Descarga una copia (propia o admin)
+- `GET /api/solicitudes/descargar-zip?ids=1,2` - ZIP múltiple (propias o admin)
+- `GET/POST /api/clientes`, `GET/POST/PATCH /api/tramites` - Gestión interna (roles `admin`/`consultor`)
 
 ## Licencia
 
