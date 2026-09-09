@@ -2611,7 +2611,7 @@ const FormularioFUN: React.FC = () => {
         </p>
       </section>
 
-      {/* Botones de autoridades */}
+      {/* Botón de descarga */}
       <div className="form-actions">
         <button
           type="submit"
@@ -2620,29 +2620,6 @@ const FormularioFUN: React.FC = () => {
           disabled={downloading}
         >
           {downloading ? 'Generando PDF…' : 'Descargar PDF diligenciado'}
-        </button>
-      </div>
-      <div className="form-actions">
-        <button
-          type="button"
-          className="btn-primary"
-          style={{ flex: 1, maxWidth: '280px' }}
-        >
-          CAR CUNDINAMARCA
-        </button>
-        <button
-          type="button"
-          className="btn-primary"
-          style={{ flex: 1, maxWidth: '280px' }}
-        >
-          SECRETARÍA DISTRITAL
-        </button>
-        <button
-          type="button"
-          className="btn-primary"
-          style={{ flex: 1, maxWidth: '280px' }}
-        >
-          CORPOBOYACÁ
         </button>
       </div>
 
