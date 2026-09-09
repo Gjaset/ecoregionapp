@@ -33,3 +33,5 @@ formatos
 backend/.env
 backend/generated/
 generated/
+
+estimacion_costos_app_empresarial.md
