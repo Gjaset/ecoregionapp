@@ -282,4 +282,6 @@ El `fun_template.pdf` vive en `backend/templates/` y se resuelve por `__file__`,
 
 ## Licencia
 
-Este proyecto está bajo licencia privada - ECO REGIÓN SAS BIC.
+Este proyecto es un prototipo académico de uso demostrativo y se distribuye bajo una licencia privada. No constituye una plataforma oficial para la radicación, gestión o seguimiento de trámites legales o administrativos, y sus autores no se hacen responsables por decisiones, solicitudes, documentos o consecuencias derivadas de su uso.
+
+El código, los diseños, las plantillas y los demás recursos del proyecto están protegidos por la legislación aplicable. Cualquier modificación, copia, descarga, publicación, distribución o divulgación no autorizada puede generar consecuencias legales. Para utilizar, adaptar o redistribuir este proyecto, se debe contar previamente con la autorización expresa de sus titulares.

@@ -27,9 +27,6 @@ dependencies = [
     "uvicorn[standard]==0.32.0",
 ]
 
-[project.scripts]
-ecoregionapp = "ecoregionapp:main"
-
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "function"
 pythonpath = ["backend"]
