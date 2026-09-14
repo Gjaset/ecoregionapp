@@ -32,7 +32,34 @@ def _auth(email):
 def _exportar(headers, nombre="Predio Demo"):
     return client.post(
         "/api/formulario/fun/exportar-pdf",
-        json={"tipoSolicitud": "nueva", "nombreRazonSocial": nombre},
+        json={
+            "tipoSolicitud": "nueva",
+            "tipoPersona": "natural",
+            "nombreRazonSocial": nombre,
+            "tipoIdentificacion": "CC",
+            "numeroIdentificacion": "12345678",
+            "calidadPredio": "propietario",
+            "tipoPredio": "rural",
+            "costoProyecto": "1500000",
+            "costoProyectoLetras": "un millón quinientos mil pesos",
+            "modoAdquirirDerecho": "propiedad",
+            "categoriaProducto": "maderables",
+            "metodoAprovechamiento": "manual",
+            "nombrePredio": nombre,
+            "superficieHa": "12,5",
+            "direccionPredio": "Vereda El Centro",
+            "urbanoRural": "rural",
+            "departamento": "Cundinamarca",
+            "municipio": "Bogotá D.C.",
+            "nombreFirmante": nombre,
+            "especies": [
+                {
+                    "cantidad": "10",
+                    "nombreComun": "Eucalipto",
+                    "nombreCientifico": "Eucalyptus globulus",
+                }
+            ],
+        },
         headers=headers,
     )
 
@@ -120,3 +147,53 @@ def test_admin_directo_en_db_y_staff_ve_tramites():
     db.close()
     headers = _auth("jefe@example.com")
     assert client.get("/api/solicitudes", headers=headers).status_code == 200
+
+
+def test_subir_documento_lo_guarda_y_lista():
+    _register("subir@example.com")
+    headers = _auth("subir@example.com")
+
+    contenido = b"contenido-de-prueba-xlsx"
+    resp = client.post(
+        "/api/solicitudes/subir",
+        headers=headers,
+        data={"tipo": "f1"},
+        files={"archivo": ("ficha_f1.xlsx", contenido, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")},
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["tipo"] == "f1"
+    assert body["nombre_archivo"].endswith(".xlsx")
+
+    mias = client.get("/api/solicitudes/mias", headers=headers).json()
+    assert any(s["tipo"] == "f1" for s in mias)
+
+    # Descarga del archivo subido
+    sid = body["id"]
+    dl = client.get(f"/api/solicitudes/{sid}/descargar", headers=headers)
+    assert dl.status_code == 200
+    assert dl.content == contenido
+
+
+def test_subir_exige_login_y_tipo_valido():
+    _register("subir2@example.com")
+    headers = _auth("subir2@example.com")
+    resp = client.post(
+        "/api/solicitudes/subir",
+        data={"tipo": "otro-desconocido"},
+        files={"archivo": ("a.xlsx", b"x", "application/octet-stream")},
+    )
+    # Sin token -> 401 (no se registra el tipo inválido primero)
+    sin_token = client.post(
+        "/api/solicitudes/subir",
+        data={"tipo": "f1"},
+        files={"archivo": ("a.xlsx", b"x", "application/octet-stream")},
+    )
+    assert sin_token.status_code == 401
+    resp_auth = client.post(
+        "/api/solicitudes/subir",
+        headers=headers,
+        data={"tipo": "desconocido"},
+        files={"archivo": ("a.xlsx", b"x", "application/octet-stream")},
+    )
+    assert resp_auth.status_code == 422

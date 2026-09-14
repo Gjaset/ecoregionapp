@@ -37,7 +37,7 @@ const LoginPage: React.FC = () => {
           <div className="auth-card">
             <header className="auth-header">
               <h1>Iniciar sesión</h1>
-              <p>Accede a tu cuenta para continuar</p>
+              <p>Accede para guardar y dar seguimiento a tus trámites.</p>
             </header>
 
             {error && <div className="auth-error">{error}</div>}
@@ -84,12 +84,12 @@ const LoginPage: React.FC = () => {
               </div>
 
               <button type="submit" className="btn-primary btn-full" disabled={isLoading}>
-                {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
+                {isLoading ? 'Entrando…' : 'Entrar'}
               </button>
             </form>
 
             <footer className="auth-footer">
-              <p>¿No tienes cuenta? <Link to="/register">Crear una</Link></p>
+              <p>¿Primera vez? <Link to="/register">Crea tu cuenta</Link></p>
             </footer>
           </div>
         </div>

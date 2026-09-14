@@ -41,6 +41,11 @@
   color: var(--ink-soft);
   font-size: 13px;
 }
+.form-header .draft-status {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--forest);
+}
 
 /* ========================================
    SECCIONES
@@ -605,3 +610,10 @@
   margin: 0;
   font-size: 16px;
 }
+
+/* ===== Vista previa del PDF generado ===== */
+.fun-preview { margin-top: 24px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.fun-preview-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--line); background: var(--surface-2, var(--surface)); }
+.fun-preview-header h3 { margin: 0; font-size: 15px; color: var(--forest-deep); }
+.fun-preview-body { max-height: 72vh; overflow: auto; padding: 20px; background: #f4f4f4; }
+.fun-preview-body .react-pdf__Page { margin: 0 auto 16px; box-shadow: 0 2px 10px rgba(0,0,0,.12); }

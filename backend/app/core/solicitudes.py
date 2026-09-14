@@ -1,5 +1,11 @@
-"""Persistencia de copias de documentos exportados (trazabilidad por usuario)."""
+"""Persistencia de copias de documentos exportados (trazabilidad por usuario).
 
+El contenido vive en la DB (columna `contenido`): funciona en serverless
+sin disco persistente. En desarrollo local además se guarda una copia en
+GENERATED_PATH como respaldo legible; si el disco falla, la DB manda.
+"""
+
+import os
 import re
 import unicodedata
 from datetime import datetime, timezone
@@ -27,18 +33,23 @@ def guardar_solicitud(
     extension: str,
     resumen: dict | None = None,
 ) -> Solicitud:
-    carpeta = Path(settings.GENERATED_PATH)
-    carpeta.mkdir(parents=True, exist_ok=True)
     marca = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     nombre_archivo = f"{tipo}_{usuario_id}_{marca}_{_slug(nombre_base)}{extension}"
-    ruta = carpeta / nombre_archivo
-    ruta.write_bytes(contenido)
+    ruta = Path(settings.GENERATED_PATH) / nombre_archivo
+    if not os.getenv("VERCEL"):
+        # Copia local opcional (best-effort): la fuente de verdad es la DB.
+        try:
+            ruta.parent.mkdir(parents=True, exist_ok=True)
+            ruta.write_bytes(contenido)
+        except OSError:
+            pass
     solicitud = Solicitud(
         usuario_id=usuario_id,
         tipo=tipo,
         nombre_archivo=nombre_archivo,
         ruta_archivo=str(ruta),
         tamano_bytes=len(contenido),
+        contenido=contenido,
         resumen=resumen or {},
     )
     db.add(solicitud)
@@ -48,4 +59,7 @@ def guardar_solicitud(
 
 
 def leer_archivo(solicitud: Solicitud) -> bytes:
+    if solicitud.contenido:
+        return bytes(solicitud.contenido)
+    # Filas viejas (pre-0005): respaldo en disco.
     return Path(solicitud.ruta_archivo).read_bytes()

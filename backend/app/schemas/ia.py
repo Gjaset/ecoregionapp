@@ -16,3 +16,10 @@ class ChatResponse(BaseModel):
     reply: str
     fallback: bool = False
     model: str | None = None
+
+
+class AgenteRequest(BaseModel):
+    """Pregunta + historial reciente; el prompt sistema lo construye el servidor."""
+
+    pregunta: str = Field(min_length=1, max_length=1000)
+    historial: list[ChatMessage] = Field(default_factory=list, max_length=6)

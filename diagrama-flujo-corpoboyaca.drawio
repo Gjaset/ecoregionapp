@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" agent="Muse Spark" version="26.0.0">
+  <diagram name="CORPOBOYACA" id="corpoboyaca-page">
+    <mxGraphModel dx="800" dy="60" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="CORPOBOYACA_inicio" value="Iniciar aplicación" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="320" y="20" width="160" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_cuenta" value="¿Tiene&#10;cuenta?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="100" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_crear" value="Crear cuenta&#10;(rol cliente)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="105" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_login" value="Iniciar sesión&#10;(JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="220" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_login_ok" value="¿Login&#10;válido?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="305" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_fun" value="¿FUN General&#10;diligenciado?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="415" width="170" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_fun_gen" value="Diligenciar&#10;Formulario General" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="425" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_norm" value="Normalizar datos&#10;+ Autoridad auto:&#10;Corpoboyacá&#10;Municipios de Boyacá" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="540" width="170" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_form" value="Clasificar escenario&#10;Origen* (nativo/exótico)&#10;+ Finalidad* + Volumen m³*&#10;+ Ref. FGR-29 + Correo radic.&#10;+ N° predios" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="665" width="170" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_completa" value="¿Info completa&#10;y correcta?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="810" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_extra" value="Definir escenario FGR&#10;(nativo/doméstico/obra/&#10;comercial/emergencia)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="810" width="165" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_check" value="Checklist anexos Corpoboyacá&#10;ID + Propiedad/Tenencia&#10;+ Plano + Inventario + Fotos&#10;+ Formatos FGR-06 / FGR-29" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="930" width="170" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_anexos_ok" value="¿Anexos&#10;completos?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1065" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_ml" value="Modelo ML +&#10;reglas verifica" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1180" width="170" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_ml_ok" value="¿Datos válidos?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1270" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_errores" value="Mostrar errores&#10;+ sugerencia IA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="1280" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_gen" value="Generar Word Corpoboyacá&#10;(FGR-06/FGR-29) + FUN PDF" style="shape=document;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1390" width="170" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_guardar" value="Guardar en&#10;Mis Solicitudes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1490" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_descargar" value="Descargar&#10;documento / ZIP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1575" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_otro" value="¿Otro trámite?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1660" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_fin" value="Fin" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1770" width="140" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_inicio" target="CORPOBOYACA_cuenta">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e2" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_cuenta" target="CORPOBOYACA_login">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e3" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_cuenta" target="CORPOBOYACA_crear">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_crear" target="CORPOBOYACA_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_login" target="CORPOBOYACA_login_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e6" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_login_ok" target="CORPOBOYACA_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="347" />
+              <mxPoint x="230" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e7" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_login_ok" target="CORPOBOYACA_fun">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e8" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_fun" target="CORPOBOYACA_norm">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e9" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_fun" target="CORPOBOYACA_fun_gen">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_fun_gen" target="CORPOBOYACA_norm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="587" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_norm" target="CORPOBOYACA_form">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_form" target="CORPOBOYACA_completa">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e13" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_completa" target="CORPOBOYACA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="855" />
+              <mxPoint x="230" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e14" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_completa" target="CORPOBOYACA_extra">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_extra" target="CORPOBOYACA_check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="982" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_check" target="CORPOBOYACA_anexos_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e18" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_anexos_ok" target="CORPOBOYACA_check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="1107" />
+              <mxPoint x="230" y="982" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e19" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_anexos_ok" target="CORPOBOYACA_ml">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_ml" target="CORPOBOYACA_ml_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e21" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_ml_ok" target="CORPOBOYACA_errores">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e22" value="corregir" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_errores" target="CORPOBOYACA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e23" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_ml_ok" target="CORPOBOYACA_gen">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_gen" target="CORPOBOYACA_guardar">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_guardar" target="CORPOBOYACA_descargar">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_descargar" target="CORPOBOYACA_otro">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e27" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_otro" target="CORPOBOYACA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="1702" />
+              <mxPoint x="230" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e28" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_otro" target="CORPOBOYACA_fin">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

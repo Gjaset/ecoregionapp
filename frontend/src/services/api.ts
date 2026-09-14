@@ -44,8 +44,8 @@ export const api = {
     const response = await http.put(`/formulario/drafts/${draftId}`, { version, data });
     return response.data;
   },
-  chat: async (messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>) => {
-    const response = await http.post(`/ia/chat`, { messages });
+  agente: async (pregunta: string, historial: Array<{ role: 'user' | 'assistant'; content: string }>) => {
+    const response = await http.post(`/ia/agente`, { pregunta, historial });
     return response.data as { reply: string; fallback: boolean; model?: string };
   },
   exportarFunPdf: async (formData: any) => {
@@ -120,10 +120,18 @@ export const api = {
       usuario_email: string;
       usuario_nombre: string;
       tipo: string;
+      estado: string;
       nombre_archivo: string;
       tamano_bytes: number;
       creado_en: string;
+      resumen?: Record<string, string>;
     }>;
+  },
+  updateSolicitudEstado: async (id: number, estado: string) => {
+    const response = await http.patch(`/solicitudes/${id}/estado`, null, {
+      params: { estado },
+    });
+    return response.data as { id: number; estado: string };
   },
   downloadSolicitud: async (id: number) => {
     const response = await http.get(`/solicitudes/${id}/descargar`, { responseType: 'blob' });
@@ -135,6 +143,51 @@ export const api = {
       responseType: 'blob',
     });
     return response.data;
+  },
+  subirDocumento: async (tipo: string, archivo: Blob, nombreArchivo: string) => {
+    const form = new FormData();
+    form.append('tipo', tipo);
+    form.append('archivo', archivo, nombreArchivo);
+    const response = await http.post(`/solicitudes/subir`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+  getReporteResumen: async () => {
+    const response = await http.get(`/reportes/resumen`);
+    return response.data as {
+      totales: { solicitudes: number; usuarios: number; bytes: number };
+      por_tipo: Record<string, number>;
+      por_mes: Record<string, number>;
+      top_usuarios: Array<{ usuario_id: number; nombre: string; email: string; total: number }>;
+      actividad_reciente: Array<{ fecha: string; total: number }>;
+      tipos_disponibles: Array<{ tipo: string; label: string }>;
+      generado_en: string;
+    };
+  },
+  getReporteDetalle: async (params?: {
+    usuario_id?: number;
+    tipo?: string;
+    fecha_desde?: string;
+    fecha_hasta?: string;
+  }) => {
+    const response = await http.get(`/reportes/detalle`, { params });
+    return response.data as {
+      total: number;
+      registros: Array<{
+        id: number;
+        usuario_id: number;
+        usuario_nombre: string;
+        usuario_email: string;
+        tipo: string;
+        tipo_label: string;
+        nombre_archivo: string;
+        tamano_bytes: number;
+        creado_en: string | null;
+        detalle: Record<string, string>;
+      }>;
+      generado_en: string;
+    };
   },
 };
 

@@ -4,13 +4,13 @@ import unicodedata
 import zipfile
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.seguridad import get_current_user, require_admin
-from app.core.solicitudes import leer_archivo
+from app.core.seguridad import get_current_user, require_admin, require_staff
+from app.core.solicitudes import guardar_solicitud, leer_archivo
 from app.database import get_db
 from app.models.solicitud import Solicitud
 from app.models.usuario import Usuario
@@ -27,9 +27,11 @@ def _to_read(solicitud: Solicitud) -> SolicitudRead:
         usuario_email=getattr(usuario, "email", "") or "",
         usuario_nombre=getattr(usuario, "nombre", "") or "",
         tipo=solicitud.tipo,
+        estado=solicitud.estado,
         nombre_archivo=solicitud.nombre_archivo,
         tamano_bytes=solicitud.tamano_bytes,
         creado_en=solicitud.creado_en,
+        resumen=solicitud.resumen,
     )
 
 
@@ -118,13 +120,70 @@ def descargar_solicitud(
 ):
     solicitud = _get_visible(solicitud_id, usuario, db)
     contenido = leer_archivo(solicitud)
-    media = (
-        "application/pdf"
-        if solicitud.nombre_archivo.endswith(".pdf")
-        else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
+    media = _media_type(solicitud.nombre_archivo)
     return StreamingResponse(
         io.BytesIO(contenido),
         media_type=media,
         headers={"Content-Disposition": f'attachment; filename="{solicitud.nombre_archivo}"'},
     )
+
+
+@router.post("/subir", response_model=SolicitudRead)
+async def subir_documento(
+    archivo: UploadFile = File(...),
+    tipo: str = Form(...),
+    usuario: Usuario = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Guarda un documento exportado desde el frontend (F1/F2/F3/FG1/FG2) como
+    solicitud, para que aparezca en Documentos y Mis solicitudes."""
+    contenido = await archivo.read()
+    if not contenido:
+        raise HTTPException(status_code=422, detail="El archivo está vacío.")
+    nombre = archivo.filename or "documento"
+    # tipo limitado a las categorías conocidas para evitar ruido en el panel
+    tipos_validos = {"fun", "formulario", "f1", "f2", "f3", "fg1", "fg2"}
+    if tipo not in tipos_validos:
+        raise HTTPException(status_code=422, detail=f"Tipo no válido: {tipo}")
+    solicitud = guardar_solicitud(
+        db,
+        usuario_id=usuario.id,
+        tipo=tipo,
+        contenido=contenido,
+        nombre_base=nombre.rsplit(".", 1)[0],
+        extension=("." + nombre.rsplit(".", 1)[1]) if "." in nombre else "",
+        resumen={"origen": "frontend"},
+    )
+    return _to_read(solicitud)
+
+
+ESTADOS_VALIDOS = {"pendiente", "en_revision", "aprobado", "rechazado"}
+
+
+@router.patch("/{solicitud_id}/estado", response_model=SolicitudRead)
+def cambiar_estado(
+    solicitud_id: int,
+    estado: str,
+    usuario: Usuario = Depends(require_staff),
+    db: Session = Depends(get_db),
+):
+    solicitud = db.get(Solicitud, solicitud_id)
+    if solicitud is None:
+        raise HTTPException(status_code=404, detail="Solicitud no encontrada.")
+    if estado not in ESTADOS_VALIDOS:
+        raise HTTPException(status_code=422, detail=f"Estado no válido: {estado}")
+    solicitud.estado = estado
+    db.commit()
+    db.refresh(solicitud)
+    return _to_read(solicitud)
+
+
+def _media_type(nombre_archivo: str) -> str:
+    nombre = nombre_archivo.lower()
+    if nombre.endswith(".pdf"):
+        return "application/pdf"
+    if nombre.endswith(".xlsx"):
+        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    if nombre.endswith(".xls"):
+        return "application/vnd.ms-excel"
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document"

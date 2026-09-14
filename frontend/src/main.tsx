@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import App from './App'
+import { AIAssistant } from './components/comunes/AIAssistant'
 import MainPage from './pages/MainPage'
 import FormularioFUNPage from './pages/FormularioFUNPage'
 import FormCARPage from './pages/formulario/FormCARPage'
@@ -24,6 +25,15 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return isAdmin ? <>{children}</> : <Navigate to="/" replace />;
 }
 
+const FUN_COMPLETADO_KEY = 'ecoregion:fun-completado';
+
+function FUNGuard({ children }: { children: React.ReactNode }) {
+  const { isAdmin } = useAuth();
+  if (isAdmin) return <>{children}</>;
+  const funCompletado = localStorage.getItem(FUN_COMPLETADO_KEY) === '1';
+  return funCompletado ? <>{children}</> : <Navigate to="/formulario-fun" replace />;
+}
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <AuthProvider>
@@ -33,19 +43,36 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/formulario-fun" element={<FormularioFUNPage />} />
-          <Route path="/formulario-car" element={<FormCARPage />} />
-          <Route path="/formatos" element={<FormatosPage />} />
-          <Route path="/formatos/f1" element={<FormatF1Page />} />
-          <Route path="/formatos/f2" element={<FormatF2Page />} />
-          <Route path="/formatos/f3" element={<FormatF3Page />} />
-          <Route path="/formatos/fg1" element={<FormatFG1Page />} />
-          <Route path="/formatos/fg2" element={<FormatFG2Page />} />
+          <Route path="/formulario-car" element={
+            <FUNGuard><FormCARPage /></FUNGuard>
+          } />
+          <Route path="/formatos" element={
+            <FUNGuard><FormatosPage /></FUNGuard>
+          } />
+          <Route path="/formatos/f1" element={
+            <FUNGuard><FormatF1Page /></FUNGuard>
+          } />
+          <Route path="/formatos/f2" element={
+            <FUNGuard><FormatF2Page /></FUNGuard>
+          } />
+          <Route path="/formatos/f3" element={
+            <FUNGuard><FormatF3Page /></FUNGuard>
+          } />
+          <Route path="/formatos/fg1" element={
+            <FUNGuard><FormatFG1Page /></FUNGuard>
+          } />
+          <Route path="/formatos/fg2" element={
+            <FUNGuard><FormatFG2Page /></FUNGuard>
+          } />
           <Route path="/mis-solicitudes" element={<MisSolicitudesPage />} />
           <Route path="/admin" element={
             <AdminRoute><AdminPage /></AdminRoute>
           } />
-          <Route path="/app/*" element={<App />} />
+          <Route path="/app/*" element={
+            <FUNGuard><App /></FUNGuard>
+          } />
         </Routes>
+        <AIAssistant />
       </BrowserRouter>
     </AuthProvider>
   </React.StrictMode>,

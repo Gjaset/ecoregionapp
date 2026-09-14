@@ -1,0 +1,492 @@
+/* ========================================
+   FORM CAR - ESTILOS EXCLUSIVOS
+   ======================================== */
+
+:root {
+  --form-gap: 24px;
+  --form-card-radius: 12px;
+}
+
+/* ========================================
+   CONTENEDOR PRINCIPAL
+   ======================================== */
+.formato-container {
+  display: grid;
+  gap: var(--form-gap);
+  width: 100%;
+}
+
+/* Header del formulario */
+.formato-header {
+  text-align: center;
+  padding: 24px 0 8px;
+}
+.formato-header h1 {
+  margin: 0 0 8px;
+  color: var(--forest-deep);
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.formato-header p {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+/* Progress bar en header */
+.formato-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  justify-content: center;
+}
+.progress-bar {
+  flex: 1;
+  max-width: 300px;
+  height: 8px;
+  background: var(--line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--forest);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.formato-progress span {
+  font-size: 13px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* Toolbar */
+.formato-toolbar {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+/* Mensajes de éxito/error */
+.formato-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.formato-message.success {
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  color: var(--forest-deep);
+}
+[data-theme="dark"] .formato-message.success {
+  background: #1a3d38;
+  border-color: #2d4a3a;
+  color: #81e09a;
+}
+.formato-message.error {
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-ink);
+}
+[data-theme="dark"] .formato-message.error {
+  background: #3a1a1a;
+  border-color: #5a2d2d;
+  color: #f09885;
+}
+
+/* Formulario principal */
+.formato-form {
+  display: grid;
+  gap: var(--form-gap);
+}
+
+/* Sección contenedora */
+.form-section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--form-card-radius);
+  padding: 24px;
+  display: contents; /* FIX: ver comentario más abajo */
+}
+[data-theme="dark"] .form-section {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.form-section h2 {
+  margin: 0 0 20px;
+  color: var(--forest-deep);
+  font-size: 18px;
+  font-weight: 600;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+[data-theme="dark"] .form-section h2 {
+  border-color: var(--line);
+}
+.section-description {
+  margin: 0 0 20px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/*
+  FIX: en algún otro CSS del proyecto, .form-section está recibiendo un
+  max-width/width que lo achica (confirmado: display:contents lo evidenció,
+  porque al sacar la caja del árbol, documentos-grid pasó a ocupar todo el
+  ancho). En vez de eliminar la caja (lo cual borra el fondo/borde/padding
+  de la tarjeta), forzamos aquí el ancho correcto, pero SOLO dentro de esta
+  página gracias al scope .formcar-page — así no afecta a .form-section en
+  otros formularios que sí puedan depender de ese ancho angosto.
+*/
+.formcar-page .form-section {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  box-sizing: border-box;
+  display: contents;
+}
+
+/* Botones */
+.btn-primary {
+  padding: 14px 28px;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 7px 18px rgba(31, 91, 78, 0.16);
+}
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(31, 91, 78, 0.18);
+}
+[data-theme="dark"] .btn-primary {
+  background: var(--btn-bg);
+  box-shadow: 0 7px 18px rgba(79, 168, 92, 0.3);
+}
+[data-theme="dark"] .btn-primary:hover:not(:disabled) {
+  box-shadow: 0 10px 22px rgba(79, 168, 92, 0.4);
+}
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  padding: 12px 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-secondary:hover {
+  background: var(--mint);
+  border-color: var(--forest);
+  color: var(--forest);
+}
+[data-theme="dark"] .btn-secondary {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+/* ========================================
+   GRID DE DOCUMENTOS - 3 COLUMNAS x 2 FILAS
+   ======================================== */
+
+/*
+  El layout base (display, columnas, ancho) se fuerza vía inline style
+  directamente en FormCAR.tsx para evitar cualquier conflicto de cascada.
+  Aquí solo dejamos el gap y el comportamiento responsive, que sí puede
+  sobreescribir el inline gracias a !important.
+*/
+.documentos-grid {
+  display: grid;
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 1100px) {
+  .documentos-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .documentos-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .documento-card {
+    min-height: auto;
+  }
+}
+
+.documento-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 20px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 320px;
+  box-sizing: border-box;
+}
+.documento-card:hover {
+  border-color: var(--forest);
+  box-shadow: 0 4px 16px rgba(23, 59, 53, .08);
+}
+[data-theme="dark"] .documento-card {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.documento-card.completo {
+  border-color: var(--forest);
+  background: #f0fdf4;
+}
+[data-theme="dark"] .documento-card.completo {
+  background: #1a3d38;
+  border-color: var(--forest);
+}
+.documento-card.obligatorio::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--coral);
+  border-radius: 12px 12px 0 0;
+}
+
+.documento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 12px;
+}
+.documento-info h3 {
+  margin: 0 0 6px;
+  color: var(--forest-deep);
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.badge-obligatorio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--coral);
+  color: var(--btn-text);
+  font-size: 11px;
+  font-weight: 700;
+}
+.documento-descripcion {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.documento-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--mint);
+  color: var(--forest);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.documento-content {
+  margin-bottom: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.archivo-cargado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--mint);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  width: 100%;
+}
+.archivo-preview {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  background: var(--surface);
+  border-radius: 8px;
+  color: var(--forest);
+  flex-shrink: 0;
+}
+.archivo-detalles {
+  flex: 1;
+  min-width: 0;
+}
+.archivo-nombre {
+  display: block;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.archivo-meta {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.btn-eliminar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-eliminar:hover {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: #fdf0f0;
+}
+[data-theme="dark"] .btn-eliminar {
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink-soft);
+}
+[data-theme="dark"] .btn-eliminar:hover {
+  border-color: #e74c3c;
+  color: #f09885;
+  background: #3a1a1a;
+}
+
+.archivo-vacio {
+  border: 2px dashed var(--line);
+  border-radius: 10px;
+  padding: 24px;
+  transition: all 0.2s ease;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  position: relative;
+}
+.archivo-vacio:hover {
+  border-color: var(--forest);
+  background: var(--mint);
+}
+.archivo-vacio:has(input:focus) {
+  border-color: var(--forest);
+  background: var(--mint);
+}
+.file-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+.file-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  text-align: center;
+}
+.file-label:hover {
+  color: var(--forest);
+}
+.file-label small {
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+
+.documento-alerta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: var(--warn-bg);
+  border: 1px solid var(--warn-border);
+  border-radius: 8px;
+  color: var(--warn-ink);
+  font-size: 12px;
+  font-weight: 500;
+}
+[data-theme="dark"] .documento-alerta {
+  background: #3a1a1a;
+  border-color: #5a2d2d;
+  color: #f09885;
+}
+
+.formato-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+}
+
+@media (max-width: 760px) {
+  .formato-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .formato-toolbar button {
+    width: 100%;
+    justify-content: center;
+  }
+  .formato-header {
+    text-align: center;
+  }
+  .progress-bar {
+    max-width: none;
+  }
+}

@@ -1,0 +1,623 @@
+<mxfile host="app.diagrams.net" agent="Muse Spark" version="26.0.0">
+  <diagram name="CAR" id="car-page">
+    <mxGraphModel dx="800" dy="60" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="CAR_inicio" value="Iniciar aplicación" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="320" y="20" width="160" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_cuenta" value="¿Tiene&#10;cuenta?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="100" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_crear" value="Crear cuenta&#10;(rol cliente)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="105" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_login" value="Iniciar sesión&#10;(JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="220" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_login_ok" value="¿Login&#10;válido?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="305" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_fun" value="¿FUN General&#10;diligenciado?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="415" width="170" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_fun_gen" value="Diligenciar&#10;Formulario General" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="425" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_norm" value="Normalizar datos&#10;+ Autoridad auto:&#10;CAR Cundinamarca&#10;Municipios de Cundinamarca" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="540" width="170" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_form" value="Diligenciar formulario CAR&#10;Relación predio* + Matrícula&#10;+ Fecha tradición + Croquis*&#10;+ Motivo* + Apoderado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="665" width="170" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_completa" value="¿Info completa&#10;y correcta?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="810" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_extra" value="Verificar matrícula /&#10;tenencia del predio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="810" width="165" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_check" value="Checklist anexos CAR&#10;ID + Propiedad/Tenencia&#10;+ Plano + Inventario + Fotos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="930" width="170" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_anexos_ok" value="¿Anexos&#10;completos?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1065" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_ml" value="Modelo ML +&#10;reglas verifica" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1180" width="170" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_ml_ok" value="¿Datos válidos?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1270" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_errores" value="Mostrar errores&#10;+ sugerencia IA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="1280" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_gen" value="Generar Word CAR +&#10;Exportar FUN PDF" style="shape=document;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1390" width="170" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_guardar" value="Guardar en&#10;Mis Solicitudes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1490" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_descargar" value="Descargar&#10;documento / ZIP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1575" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_otro" value="¿Otro trámite?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1660" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_fin" value="Fin" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1770" width="140" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="CAR_e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_inicio" target="CAR_cuenta">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e2" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_cuenta" target="CAR_login">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e3" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_cuenta" target="CAR_crear">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_crear" target="CAR_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_login" target="CAR_login_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e6" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_login_ok" target="CAR_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="347" />
+              <mxPoint x="230" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e7" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_login_ok" target="CAR_fun">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e8" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_fun" target="CAR_norm">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e9" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_fun" target="CAR_fun_gen">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_fun_gen" target="CAR_norm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="587" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_norm" target="CAR_form">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_form" target="CAR_completa">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e13" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_completa" target="CAR_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="855" />
+              <mxPoint x="230" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e14" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_completa" target="CAR_extra">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_extra" target="CAR_check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="982" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_check" target="CAR_anexos_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e18" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_anexos_ok" target="CAR_check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="1107" />
+              <mxPoint x="230" y="982" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e19" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_anexos_ok" target="CAR_ml">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_ml" target="CAR_ml_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e21" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_ml_ok" target="CAR_errores">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e22" value="corregir" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_errores" target="CAR_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e23" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_ml_ok" target="CAR_gen">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_gen" target="CAR_guardar">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_guardar" target="CAR_descargar">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_descargar" target="CAR_otro">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e27" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_otro" target="CAR_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="1702" />
+              <mxPoint x="230" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CAR_e28" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CAR_otro" target="CAR_fin">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="SDA" id="sda-page">
+    <mxGraphModel dx="800" dy="60" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="SDA_inicio" value="Iniciar aplicación" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="320" y="20" width="160" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_cuenta" value="¿Tiene&#10;cuenta?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="100" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_crear" value="Crear cuenta&#10;(rol cliente)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="105" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_login" value="Iniciar sesión&#10;(JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="220" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_login_ok" value="¿Login&#10;válido?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="305" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_fun" value="¿FUN General&#10;diligenciado?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="415" width="170" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_fun_gen" value="Diligenciar&#10;Formulario General" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="425" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_norm" value="Normalizar datos&#10;+ Autoridad auto:&#10;SDA Bogotá D.C.&#10;Bogotá D.C. (11001) - Arbolado urbano" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="540" width="170" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_form" value="Diligenciar fichas SDA&#10;PM04-PR30 F1, F2, F3&#10;Dirección* + Intervención*&#10;+ Estado fitosanitario&#10;+ Destino + Compensación" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="665" width="170" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_completa" value="¿Info completa&#10;y correcta?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="810" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_extra" value="Validar dirección arbolado&#10;+ código expediente" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="810" width="165" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_check" value="Checklist anexos SDA&#10;ID + Cert. tradición y libertad&#10;+ Plano + Inventario + Fotos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="930" width="170" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_anexos_ok" value="¿Anexos&#10;completos?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1065" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_ml" value="Modelo ML +&#10;reglas verifica" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1180" width="170" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_ml_ok" value="¿Datos válidos?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1270" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_errores" value="Mostrar errores&#10;+ sugerencia IA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="1280" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_gen" value="Generar Word SDA (F1-F3) +&#10;Exportar FUN PDF" style="shape=document;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1390" width="170" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_guardar" value="Guardar en&#10;Mis Solicitudes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1490" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_descargar" value="Descargar&#10;documento / ZIP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1575" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_otro" value="¿Otro trámite?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1660" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_fin" value="Fin" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1770" width="140" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="SDA_e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_inicio" target="SDA_cuenta">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e2" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_cuenta" target="SDA_login">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e3" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_cuenta" target="SDA_crear">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_crear" target="SDA_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_login" target="SDA_login_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e6" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_login_ok" target="SDA_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="347" />
+              <mxPoint x="230" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e7" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_login_ok" target="SDA_fun">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e8" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_fun" target="SDA_norm">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e9" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_fun" target="SDA_fun_gen">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_fun_gen" target="SDA_norm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="587" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_norm" target="SDA_form">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_form" target="SDA_completa">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e13" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_completa" target="SDA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="855" />
+              <mxPoint x="230" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e14" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_completa" target="SDA_extra">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_extra" target="SDA_check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="982" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_check" target="SDA_anexos_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e18" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_anexos_ok" target="SDA_check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="1107" />
+              <mxPoint x="230" y="982" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e19" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_anexos_ok" target="SDA_ml">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_ml" target="SDA_ml_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e21" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_ml_ok" target="SDA_errores">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e22" value="corregir" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_errores" target="SDA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e23" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_ml_ok" target="SDA_gen">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_gen" target="SDA_guardar">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_guardar" target="SDA_descargar">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_descargar" target="SDA_otro">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e27" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_otro" target="SDA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="1702" />
+              <mxPoint x="230" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SDA_e28" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="SDA_otro" target="SDA_fin">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="CORPOBOYACA" id="corpoboyaca-page">
+    <mxGraphModel dx="800" dy="60" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="CORPOBOYACA_inicio" value="Iniciar aplicación" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="320" y="20" width="160" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_cuenta" value="¿Tiene&#10;cuenta?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="100" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_crear" value="Crear cuenta&#10;(rol cliente)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="105" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_login" value="Iniciar sesión&#10;(JWT)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="220" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_login_ok" value="¿Login&#10;válido?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="305" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_fun" value="¿FUN General&#10;diligenciado?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="415" width="170" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_fun_gen" value="Diligenciar&#10;Formulario General" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="425" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_norm" value="Normalizar datos&#10;+ Autoridad auto:&#10;Corpoboyacá&#10;Municipios de Boyacá" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="540" width="170" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_form" value="Clasificar escenario&#10;Origen* (nativo/exótico)&#10;+ Finalidad* + Volumen m³*&#10;+ Ref. FGR-29 + Correo radic.&#10;+ N° predios" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="665" width="170" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_completa" value="¿Info completa&#10;y correcta?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="810" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_extra" value="Definir escenario FGR&#10;(nativo/doméstico/obra/&#10;comercial/emergencia)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="810" width="165" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_check" value="Checklist anexos Corpoboyacá&#10;ID + Propiedad/Tenencia&#10;+ Plano + Inventario + Fotos&#10;+ Formatos FGR-06 / FGR-29" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="930" width="170" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_anexos_ok" value="¿Anexos&#10;completos?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1065" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_ml" value="Modelo ML +&#10;reglas verifica" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1180" width="170" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_ml_ok" value="¿Datos válidos?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1270" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_errores" value="Mostrar errores&#10;+ sugerencia IA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="590" y="1280" width="165" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_gen" value="Generar Word Corpoboyacá&#10;(FGR-06/FGR-29) + FUN PDF" style="shape=document;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1390" width="170" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_guardar" value="Guardar en&#10;Mis Solicitudes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1490" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_descargar" value="Descargar&#10;documento / ZIP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1575" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_otro" value="¿Otro trámite?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="315" y="1660" width="170" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_fin" value="Fin" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1770" width="140" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_inicio" target="CORPOBOYACA_cuenta">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e2" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_cuenta" target="CORPOBOYACA_login">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e3" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_cuenta" target="CORPOBOYACA_crear">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_crear" target="CORPOBOYACA_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_login" target="CORPOBOYACA_login_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e6" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_login_ok" target="CORPOBOYACA_login">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="347" />
+              <mxPoint x="230" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e7" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_login_ok" target="CORPOBOYACA_fun">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e8" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_fun" target="CORPOBOYACA_norm">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e9" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_fun" target="CORPOBOYACA_fun_gen">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_fun_gen" target="CORPOBOYACA_norm">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="587" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_norm" target="CORPOBOYACA_form">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_form" target="CORPOBOYACA_completa">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e13" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_completa" target="CORPOBOYACA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="855" />
+              <mxPoint x="230" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e14" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_completa" target="CORPOBOYACA_extra">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_extra" target="CORPOBOYACA_check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="982" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_check" target="CORPOBOYACA_anexos_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e18" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_anexos_ok" target="CORPOBOYACA_check">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="1107" />
+              <mxPoint x="230" y="982" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e19" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_anexos_ok" target="CORPOBOYACA_ml">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_ml" target="CORPOBOYACA_ml_ok">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e21" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_ml_ok" target="CORPOBOYACA_errores">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e22" value="corregir" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_errores" target="CORPOBOYACA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="672" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e23" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_ml_ok" target="CORPOBOYACA_gen">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_gen" target="CORPOBOYACA_guardar">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_guardar" target="CORPOBOYACA_descargar">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e26" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_descargar" target="CORPOBOYACA_otro">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e27" value="SÍ" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_otro" target="CORPOBOYACA_form">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="230" y="1702" />
+              <mxPoint x="230" y="722" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="CORPOBOYACA_e28" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="CORPOBOYACA_otro" target="CORPOBOYACA_fin">
+          <mxGeometry relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

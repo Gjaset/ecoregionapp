@@ -13,8 +13,8 @@ interface DraftSyncState {
   conflict: string | null;
 }
 
-function makeDraftId() {
-  const key = 'ecoregion:draft-id';
+function makeDraftId(namespace?: string) {
+  const key = namespace ? `ecoregion:draft-id:${namespace}` : 'ecoregion:draft-id';
   const existing = localStorage.getItem(key);
   if (existing) return existing;
   const created = typeof crypto.randomUUID === 'function'
@@ -24,16 +24,30 @@ function makeDraftId() {
   return created;
 }
 
+function scopedKey(prefix: string, namespace: string | undefined, id: string) {
+  return namespace ? `${prefix}:${namespace}:${id}` : `${prefix}:${id}`;
+}
+
+export interface DraftSyncOptions {
+  /** Aísla el borrador por formulario (wizard, fun…). Sin namespace = comportamiento actual. */
+  namespace?: string;
+  /** Clave vieja de localStorage para migrar una sola vez al borrador sincronizado. */
+  legacyLocalKey?: string;
+}
+
 export function useDraftSync<T>(
   value: T,
   onRemoteValue: (value: T) => void,
+  options?: DraftSyncOptions,
 ): DraftSyncState & { resolveConflict: () => void } {
+  const namespace = options?.namespace;
+  const legacyLocalKey = options?.legacyLocalKey;
   const [state, setState] = useState<DraftSyncState>({
     version: 0,
     status: 'loading',
     conflict: null,
   });
-  const draftId = useRef(makeDraftId());
+  const draftId = useRef(makeDraftId(namespace));
   const valueRef = useRef(value);
   const dirtyRef = useRef(false);
   const channelRef = useRef<BroadcastChannel | null>(null);
@@ -51,7 +65,19 @@ export function useDraftSync<T>(
 
   useEffect(() => {
     let active = true;
-    const localKey = `ecoregion:draft:${draftId.current}`;
+    const localKey = scopedKey('ecoregion:draft', namespace, draftId.current);
+    const adoptLocal = (raw: string | null) => {
+      if (!raw) return false;
+      try {
+        const parsed = JSON.parse(raw) as DraftEnvelope<T>;
+        setState({ version: parsed.version, status: 'offline', conflict: null });
+        suppressDirtyRef.current = true;
+        onRemoteValue(parsed.data);
+        return true;
+      } catch {
+        return false;
+      }
+    };
     const load = async () => {
       try {
         const remote = await api.getDraft(draftId.current);
@@ -63,16 +89,13 @@ export function useDraftSync<T>(
         if (!active) return;
         if (!axios.isAxiosError(error) || error.response?.status !== 404) {
           setState((current) => ({ ...current, status: 'offline' }));
+        } else if (adoptLocal(localStorage.getItem(localKey))) {
+          // Borrador local del mismo namespace.
+        } else if (legacyLocalKey && adoptLocal(localStorage.getItem(legacyLocalKey))) {
+          // Migración única desde la clave vieja (ej. formularioFUN-draft).
+          localStorage.removeItem(legacyLocalKey);
         } else {
-          const local = localStorage.getItem(localKey);
-          if (local) {
-            const parsed = JSON.parse(local) as DraftEnvelope<T>;
-            setState({ version: parsed.version, status: 'offline', conflict: null });
-            suppressDirtyRef.current = true;
-            onRemoteValue(parsed.data);
-          } else {
-            setState({ version: 0, status: 'offline', conflict: null });
-          }
+          setState({ version: 0, status: 'offline', conflict: null });
         }
       } finally {
         initialLoadRef.current = false;
@@ -80,10 +103,10 @@ export function useDraftSync<T>(
     };
     void load();
     return () => { active = false; };
-  }, [onRemoteValue]);
+  }, [onRemoteValue, namespace, legacyLocalKey]);
 
   useEffect(() => {
-    const localKey = `ecoregion:draft:${draftId.current}`;
+    const localKey = scopedKey('ecoregion:draft', namespace, draftId.current);
     const timer = window.setTimeout(async () => {
       if (initialLoadRef.current || !dirtyRef.current) return;
       setState((current) => ({ ...current, status: 'saving' }));
@@ -111,7 +134,7 @@ export function useDraftSync<T>(
 
   useEffect(() => {
     if (typeof BroadcastChannel !== 'undefined') {
-      const channel = new BroadcastChannel(`ecoregion:draft:${draftId.current}`);
+      const channel = new BroadcastChannel(scopedKey('ecoregion:draft', namespace, draftId.current));
       channelRef.current = channel;
       channel.onmessage = (event: MessageEvent<DraftEnvelope<T>>) => {
         if (event.data.version > state.version) {

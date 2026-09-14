@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.normalizacion import municipios, especies, coordenadas, tipo_aprovechamiento
 from app.core.reglas import car_selector
 from app.core.reglas import requisitos
+from app.core.validacion.fun import validar_fun
 from app.core.generacion import documento_word
 from app.core.generacion.fun_pdf import generar_fun_pdf
 from app.core.seguridad import get_current_user
@@ -108,6 +109,15 @@ async def exportar_fun_pdf(
     db: Session = Depends(get_db),
 ):
     """Rellena la plantilla oficial FUN (PDF idéntico) y la devuelve lista."""
+    errores = validar_fun(datos.model_dump())
+    if errores:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "message": "El formulario tiene campos pendientes o inconsistentes.",
+                "errores": errores,
+            },
+        )
     try:
         pdf_bytes = generar_fun_pdf(datos.model_dump())
     except FileNotFoundError as exc:

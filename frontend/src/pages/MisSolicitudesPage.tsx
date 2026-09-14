@@ -84,7 +84,7 @@ const MisSolicitudesPage: React.FC = () => {
           <header className="admin-header">
             <div>
               <h1>Mis solicitudes</h1>
-              <p>Historial de tus documentos exportados, en orden con fecha y hora</p>
+              <p>Historial de los documentos que has generado, de más reciente a más antiguo</p>
             </div>
           </header>
 
@@ -120,7 +120,7 @@ const MisSolicitudesPage: React.FC = () => {
                   {loading ? (
                     <tr><td colSpan={6} className="empty-state">Cargando…</td></tr>
                   ) : docs.length === 0 ? (
-                    <tr><td colSpan={6} className="empty-state">Aún no has exportado documentos</td></tr>
+                    <tr><td colSpan={6} className="empty-state">Aún no has generado documentos. Crea tu primera solicitud.</td></tr>
                   ) : (
                     docs.map((d) => (
                       <tr key={d.id}>

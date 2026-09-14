@@ -23,7 +23,7 @@ class Settings:
         "NVIDIA_API_URL",
         "https://integrate.api.nvidia.com/v1/chat/completions",
     )
-    NVIDIA_MODEL: str = os.getenv("NVIDIA_MODEL", "meta/llama-3.1-8b-instruct")
+    NVIDIA_MODEL: str = os.getenv("NVIDIA_MODEL", "openai/gpt-oss-20b")
 
     # Paths
     DATA_PATH: str = os.getenv("DATA_PATH", "./data")

@@ -123,7 +123,7 @@ ecoregionapp/
    Variables del backend:
    - `NVIDIA_API_KEY`: clave opcional de Nvidia.
    - `NVIDIA_API_URL`: endpoint compatible con OpenAI (por defecto `https://integrate.api.nvidia.com/v1/chat/completions`).
-   - `NVIDIA_MODEL`: modelo a utilizar (por defecto `meta/llama-3.1-8b-instruct`).
+   - `NVIDIA_MODEL`: modelo a utilizar (por defecto `openai/gpt-oss-20b`).
    - `CORS_ORIGINS`, `DATABASE_URL`, `SECRET_KEY`, `DATA_PATH`, `TEMPLATES_PATH` y `GENERATED_PATH`: configuración de la aplicación.
    - En producción (`APP_ENV=production`) el backend **exige** un `SECRET_KEY` real y falla al arrancar si es el valor de ejemplo.
 
@@ -230,6 +230,55 @@ ante un error responde de forma segura con una orientación determinista.
 - `GET /api/solicitudes/{id}/descargar` - Descarga una copia (propia o admin)
 - `GET /api/solicitudes/descargar-zip?ids=1,2` - ZIP múltiple (propias o admin)
 - `GET/POST /api/clientes`, `GET/POST/PATCH /api/tramites` - Gestión interna (roles `admin`/`consultor`)
+- `POST /api/ia/agente` - Agente IA con candado temático CAR/SDA/Corpoboyacá
+
+## Despliegue en Vercel
+
+Son **dos proyectos Vercel** (Vercel no corre Docker ni Postgres local):
+
+| Proyecto | Root Directory | Qué hace |
+|---|---|---|
+| `ecoregion-front` | `frontend` | React + Vite estático (`frontend/vercel.json` trae los rewrites SPA) |
+| `ecoregion-back` | `backend` | FastAPI en serverless vía `backend/api/index.py` (Mangum). `backend/vercel.json` redirige todo al handler |
+
+### 1. Base de datos (Neon o Supabase)
+
+Crea un Postgres externo y usa su URL **del pooler** (imprescindible en serverless):
+
+```bash
+# Desde backend/ (alembic.ini vive ahí), con la URL de producción:
+cd backend
+DATABASE_URL="postgresql://usuario:clave@pooler.neon.tech:5432/db" uv run alembic upgrade head
+DATABASE_URL="..." uv run python scripts/crear_admin.py --email admin@tudominio.com --password <clave-8+>
+```
+
+Las migraciones **no** corren en Vercel: se aplican una vez desde local antes de desplegar (la migración `0005` guarda los documentos en la DB, por eso Vercel no necesita disco).
+
+### 2. Variables en cada proyecto (dashboard → Settings → Environment Variables)
+
+Backend (`ecoregion-back`):
+- `DATABASE_URL` (pooler), `SECRET_KEY` (secreto real, `APP_ENV=production`)
+- `CORS_ORIGINS=https://ecoregion-front.vercel.app` (tu dominio del front)
+- `NVIDIA_API_KEY`, `NVIDIA_MODEL=openai/gpt-oss-20b` (opcional, el agente degrada sin ellas)
+
+Frontend (`ecoregion-front`):
+- `VITE_API_BASE_URL=https://ecoregion-back.vercel.app/api`
+
+### 3. Notas serverless
+
+- Con `VERCEL=1` (lo pone Vercel solo) el backend usa `NullPool` y omite el disco: las copias van a la columna `contenido` (migración `0005`). La `0006` añade `estado` a las solicitudes para el panel admin.
+- Cold starts de ~2-5 s en el primer request; el resto va normal.
+- Límite de función: se eliminó `pandas` (no se usaba) para caber en los 250 MB.
+
+### 4. Plantillas de formularios (XLSX / DOCX)
+
+Las plantillas oficiales (F1, F2, FGR-06, FGR-29, F3) viven en `frontend/public/formatos/` y **se sirven como estáticos** desde el frontend (se copian a `dist/formatos/` en el build). El editor en pantalla las carga, permite diligenciarlas y las exporta **preservando los logos** (se parchea el XML interno, no se regenera el archivo).
+
+Las librerías más pesadas (`docx-preview`, `react-pdf`, `pdfjs-dist`) se cargan **bajo demanda** (lazy-load) para no inflar el bundle inicial.
+
+### 5. Formato Único Nacional (FUN, PDF)
+
+El `fun_template.pdf` vive en `backend/templates/` y se resuelve por `__file__`, así que viaja dentro de la función serverless sin configuración extra.
 
 ## Licencia
 

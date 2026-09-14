@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, FileText, AlertCircle, CheckCircle, X, Download } from 'lucide-react';
+import { Upload, FileText, AlertCircle, CheckCircle, X } from 'lucide-react';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { Navbar } from '../comunes/Navbar';
 import { Footer } from '../comunes/Footer';
 import '../formatos/formcar.css';
@@ -91,33 +93,50 @@ export const FormCAR: React.FC = () => {
       return;
     }
 
+    const adjuntos = documentos.filter(doc => doc.archivo);
+    if (adjuntos.length === 0) {
+      setMessage({ type: 'error', text: 'No hay documentos para generar el archivo comprimido.' });
+      return;
+    }
+
     setIsSubmitting(true);
     setMessage(null);
 
     try {
-      // Simular envío - aquí iría la lógica real de subida
-      const formData = new FormData();
-      documentos.forEach(doc => {
+      const zip = new JSZip();
+      adjuntos.forEach(doc => {
         if (doc.archivo) {
-          formData.append(doc.id, doc.archivo);
+          zip.file(formatFileName(doc), doc.archivo);
         }
       });
 
-      // Aquí se haría el POST real al backend
-      // const response = await axios.post('/api/car/documentos', formData);
-
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      setMessage({ type: 'success', text: 'Documentos enviados correctamente a CAR' });
+      const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+      const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      saveAs(blob, `documentos_car_${stamp}.zip`);
+      setMessage({ type: 'success', text: `Se generó el archivo comprimido con ${adjuntos.length} documento(s).` });
     } catch (error) {
-      setMessage({ type: 'error', text: 'Error al enviar los documentos' });
+      setMessage({ type: 'error', text: 'Error al generar el archivo comprimido.' });
     } finally {
       setIsSubmitting(false);
     }
   }, [documentos]);
 
+  const handleClear = useCallback(() => {
+    setDocumentos(prev => prev.map(doc => {
+      if (doc.preview) URL.revokeObjectURL(doc.preview);
+      return { ...doc, archivo: undefined, preview: undefined };
+    }));
+    setMessage(null);
+  }, []);
+
   const getFileExtension = (filename: string) => {
     return filename.slice(filename.lastIndexOf('.') + 1).toUpperCase();
+  };
+
+  const formatFileName = (doc: DocumentoRequerido): string => {
+    const extension = doc.archivo ? getFileExtension(doc.archivo.name).toLowerCase() : '';
+    const prefijo = doc.id.replace(/_/g, '-');
+    return `${prefijo}.${extension}`;
   };
 
   const formatFileSize = (bytes: number) => {
@@ -146,17 +165,14 @@ export const FormCAR: React.FC = () => {
           </header>
 
           <div className="formato-toolbar">
+            <button className="btn-primary" onClick={handleSubmit} disabled={!allRequiredComplete || isSubmitting}>
+              {isSubmitting ? 'Generando ZIP...' : 'Generar ZIP de documentos'}
+            </button>
             {totalFiles > 0 && (
-              <button className="btn-secondary" onClick={() => {
-                // Aquí se podría generar un ZIP con todos los archivos
-                setMessage({ type: 'success', text: 'Función de descarga ZIP próximamente' });
-              }}>
-                <Download size={18} /> Descargar Todos
+              <button className="btn-secondary" onClick={handleClear} title="Quitar todos los archivos cargados">
+                Limpiar
               </button>
             )}
-            <button className="btn-primary" onClick={handleSubmit} disabled={!allRequiredComplete || isSubmitting}>
-              {isSubmitting ? 'Enviando...' : 'Enviar a CAR'}
-            </button>
           </div>
 
           {message && (
@@ -256,7 +272,7 @@ export const FormCAR: React.FC = () => {
 
           <div className="formato-actions">
             <button className="btn-primary" onClick={handleSubmit} disabled={!allRequiredComplete || isSubmitting} style={{ width: '100%', maxWidth: 'none' }}>
-              {isSubmitting ? 'Enviando a CAR...' : 'Enviar Documentos a CAR'}
+              {isSubmitting ? 'Generando ZIP...' : 'Generar ZIP de documentos'}
             </button>
           </div>
         </div>

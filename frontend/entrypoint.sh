@@ -12,7 +12,12 @@ if [ ! -d "/app/node_modules" ] || [ -z "$(ls -A /app/node_modules)" ]; then
 else
     echo "node_modules ya existe, verificando integridad..."
     # Verificar que las dependencias principales estén instaladas
-    if [ ! -d "/app/node_modules/docx" ] || [ ! -d "/app/node_modules/xlsx" ] || [ ! -d "/app/node_modules/file-saver" ]; then
+    if [ ! -d "/app/node_modules/docx" ] || \
+       [ ! -d "/app/node_modules/xlsx" ] || \
+       [ ! -d "/app/node_modules/file-saver" ] || \
+       [ ! -d "/app/node_modules/docx-preview" ] || \
+       [ ! -d "/app/node_modules/react-pdf" ] || \
+       [ ! -d "/app/node_modules/pdfjs-dist" ]; then
         echo "Faltan dependencias críticas, reinstalando..."
         rm -rf /app/node_modules
         npm install --legacy-peer-deps

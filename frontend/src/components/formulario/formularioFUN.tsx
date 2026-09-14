@@ -1,6 +1,10 @@
-import { useState, useCallback, useEffect, ChangeEvent, FormEvent, FocusEvent } from 'react';
+import { useState, useCallback, lazy, Suspense, ChangeEvent, FormEvent, FocusEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
+import { useDraftSync } from '../../hooks/useDraftSync';
 import './styles/formularioFUN.css';
+
+const FunPdfPreview = lazy(() => import('./FunPdfPreview'));
 
 interface FormularioFUNData {
   // Section 1: Datos del interesado
@@ -220,34 +224,17 @@ const FormularioFUN: React.FC = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  // Auto-save form data to localStorage
-  useEffect(() => {
-    const saveToLocalStorage = () => {
-      try {
-        localStorage.setItem('formularioFUN-draft', JSON.stringify(formData));
-      } catch (e) {
-        console.warn('Failed to save form data to localStorage:', e);
-      }
-    };
-
-    // Debounce the save operation
-    const handler = setTimeout(saveToLocalStorage, 1000);
-    return () => clearTimeout(handler);
-  }, [formData]);
-
-  // Load saved draft on initial render
-  useEffect(() => {
-    try {
-      const savedData = localStorage.getItem('formularioFUN-draft');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        setFormData(prev => ({ ...prev, ...parsedData }));
-      }
-    } catch (e) {
-      console.warn('Failed to load form data from localStorage:', e);
-    }
+  // Borrador sincronizado con el servidor (con respaldo local sin conexión).
+  // Migra una vez el borrador viejo de localStorage ('formularioFUN-draft').
+  const applyRemoteDraft = useCallback((remote: FormularioFUNData) => {
+    setFormData((prev) => ({ ...prev, ...remote }));
   }, []);
+  const draftSync = useDraftSync<FormularioFUNData>(formData, applyRemoteDraft, {
+    namespace: 'fun',
+    legacyLocalKey: 'formularioFUN-draft',
+  });
 
   const handleChange = useCallback((
     e: ChangeEvent<
@@ -447,8 +434,8 @@ const FormularioFUN: React.FC = () => {
         if (!esp.nombreCientifico.trim()) {
           (newErrors as Record<string, string>)[`especies[${index}].nombreCientifico`] = 'Requerido';
         }
-        // Validate that cantidad is a positive number
-        if (esp.cantidad.trim() && !/^\d+(\.\d+)?$/.test(esp.cantidad.trim())) {
+        // Validate that cantidad is a positive number (coma o punto decimal)
+        if (esp.cantidad.trim() && !/^\d+([.,]\d+)?$/.test(esp.cantidad.trim())) {
           (newErrors as Record<string, string>)[`especies[${index}].cantidad`] = 'Debe ser un número positivo';
         }
       });
@@ -543,10 +530,38 @@ const FormularioFUN: React.FC = () => {
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
-      window.URL.revokeObjectURL(url);
+      setPreviewUrl(url);
       setSubmitSuccess(true);
+      // Marca el FUN como diligenciado: habilita el acceso a los formularios
+      // de CAR, SDA y Corpoboyacá (ver FUNGuard en main.tsx).
+      localStorage.setItem('ecoregion:fun-completado', '1');
     } catch (err: unknown) {
       setSubmitSuccess(false);
+      // El backend valida de nuevo y devuelve {detail: {message, errores}}.
+      // Ojo: exportarFunPdf usa responseType 'blob', así que el 422 llega como Blob.
+      const rawData = (err as { response?: { status: number; statusText: string; data?: unknown } })?.response;
+      if (rawData?.status === 422 && rawData.data) {
+        try {
+          const text = rawData.data instanceof Blob ? await rawData.data.text() : JSON.stringify(rawData.data);
+          const parsed = JSON.parse(text) as { detail?: { message?: string; errores?: Record<string, string> } | string };
+          const detail = parsed?.detail;
+          if (detail && typeof detail === 'object' && detail.errores) {
+            setErrors((prev) => ({ ...prev, ...detail.errores }));
+            const n = Object.keys(detail.errores).length;
+            setSubmitError(
+              `El servidor encontró ${n} campo${n === 1 ? '' : 's'} por corregir. Revísalos marcados en el formulario.`
+            );
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+          }
+          if (typeof detail === 'string') {
+            setSubmitError(detail);
+            return;
+          }
+        } catch {
+          // Sigue al manejo genérico de abajo.
+        }
+      }
       if (err && typeof err === 'object' && 'response' in err) {
         const response = (err as { response?: { status: number; statusText: string } }).response;
         setSubmitError(
@@ -568,6 +583,13 @@ const FormularioFUN: React.FC = () => {
     }
   };
 
+  const handleClear = () => {
+    setFormData({ ...initialState, especies: [...initialState.especies] });
+    setErrors({});
+    setSubmitSuccess(false);
+    setSubmitError(null);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="formulario-fun">
       {/* Visually hidden error summary for screen readers */}
@@ -584,6 +606,14 @@ const FormularioFUN: React.FC = () => {
       <header className="form-header">
         <h1>Formato Único Nacional de Solicitud de Aprovechamiento Forestal y Manejo Sostenible de Flora Silvestre y Productos Forestales No Maderables</h1>
         <p>Nuevo/Prórroga</p>
+        <p className="draft-status" role="status" aria-live="polite">
+          {draftSync.status === 'saving'
+            ? 'Guardando…'
+            : draftSync.status === 'offline'
+              ? 'Guardado en este dispositivo'
+              : 'Guardado automáticamente'}
+          {draftSync.conflict ? ` ${draftSync.conflict}` : ''}
+        </p>
       </header>
 
       {/* Sección 1: Datos del interesado */}
@@ -1533,6 +1563,13 @@ const FormularioFUN: React.FC = () => {
                 <label className="field">
                   Municipio: <b>*</b>
                 </label>
+                <input
+                  type="text"
+                  value={formData.municipio}
+                  onChange={(e) => handleChange(e, 'municipio')}
+                  onBlur={(e) => handleBlur(e, 'municipio')}
+                  placeholder="Ej. Medellín"
+                />
                 {errors.municipio && (
                   <p className="field-error">{errors.municipio}</p>
                 )}
@@ -2450,75 +2487,6 @@ const FormularioFUN: React.FC = () => {
               onBlur={(e) => handleBlur(e, 'direccionNotificacion')}
               placeholder="Ej. Calle 123 # 45-67"
 
-            />
-            {errors.direccionNotificacion && (
-              <p id="error-direccionNotificacion" className="field-error">{errors.direccionNotificacion}</p>
-            )}
-            <div className="section-fields">
-              <div>
-                <label className="field">
-                  Municipio: <b>*</b>
-                </label>
-                <input
-                  type="text"
-                  value={formData.municipioNotificacion}
-                  onChange={(e) => handleChange(e, 'municipioNotificacion')}
-                  onBlur={(e) => handleBlur(e, 'municipioNotificacion')}
-                  placeholder="Ej. Medellín"
-
-                />
-                {errors.municipioNotificacion && (
-                  <p id="error-municipioNotificacion" className="field-error">{errors.municipioNotificacion}</p>
-                )}
-              </div>
-              <div>
-                <label className="field">
-                  Nombre centro poblado, vereda o corregimiento: <b>*</b>
-                </label>
-                <input
-                  type="text"
-                  value={formData.nombreCentroPobladoVeredaCorregimiento}
-                  onChange={(e) => handleChange(e, 'nombreCentroPobladoVeredaCorregimiento')}
-                  onBlur={(e) => handleBlur(e, 'nombreCentroPobladoVeredaCorregimiento')}
-                  placeholder="Ej. San Cristóbal"
-
-                />
-                {errors.nombreCentroPobladoVeredaCorregimiento && (
-                  <p id="error-nombreCentroPobladoVeredaCorregimiento" className="field-error">{errors.nombreCentroPobladoVeredaCorregimiento}</p>
-                )}
-              </div>
-              <div>
-                <label className="field">
-                  Departamento: <b>*</b>
-                </label>
-                <input
-                  type="text"
-                  value={formData.departamentoNotificacion}
-                  onChange={(e) => handleChange(e, 'departamentoNotificacion')}
-                  onBlur={(e) => handleBlur(e, 'departamentoNotificacion')}
-                  placeholder="Ej. Antioquia"
-
-                />
-                {errors.departamentoNotificacion && (
-                  <p id="error-departamentoNotificacion" className="field-error">{errors.departamentoNotificacion}</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {formData.notificacionElectronica === 'no' && (
-          <div >
-            <label className="field">
-              Dirección de notificación: <b>*</b>
-            </label>
-            <input
-              type="text"
-              value={formData.direccionNotificacion}
-              onChange={(e) => handleChange(e, 'direccionNotificacion')}
-              onBlur={(e) => handleBlur(e, 'direccionNotificacion')}
-              placeholder="Ej. Calle 123 # 45-67"
-
               aria-invalid={!!errors.direccionNotificacion}
               aria-describedby={errors.direccionNotificacion ? `error-direccionNotificacion` : undefined}
             />
@@ -2614,6 +2582,14 @@ const FormularioFUN: React.FC = () => {
       {/* Botón de descarga */}
       <div className="form-actions">
         <button
+          type="button"
+          className="btn-secondary"
+          onClick={handleClear}
+          disabled={downloading}
+        >
+          Limpiar formulario
+        </button>
+        <button
           type="submit"
           className="btn-primary"
           style={{ flex: 1, maxWidth: '340px' }}
@@ -2626,13 +2602,21 @@ const FormularioFUN: React.FC = () => {
       {/* Mensajes de resultado */}
       {submitSuccess && (
         <div className="alert alert-success">
-          PDF generado correctamente con la plantilla oficial.
+          PDF generado correctamente con la plantilla oficial y guardado en{' '}
+          <Link to="/mis-solicitudes">Mis solicitudes</Link>.
         </div>
       )}
       {submitError && (
         <div className="alert alert-error">
           Error: {submitError}
         </div>
+      )}
+
+      {/* Vista previa del PDF generado */}
+      {previewUrl && (
+        <Suspense fallback={<div className="fun-preview-body" style={{ padding: 24 }}>Cargando vista previa…</div>}>
+          <FunPdfPreview previewUrl={previewUrl} />
+        </Suspense>
       )}
     </form>
   );
